@@ -17,9 +17,8 @@
     }
 
     this.rotate = function (obj, deg, t) {
-        var id = utils.getGuid();
         _animations.push({
-            id: id,
+            obj: obj,
             animate: function (fps) {
                 if (obj.angle >= deg)
                     return true;
@@ -32,10 +31,8 @@
     }
 
     render.onInvalidate(function (status) {
-        for (var i = 0; i < _animations.length; i++) {
-            if (i > 5)
-                continue;
-            var stop = _animations[i].animate(status.fps);
+        for (var i = 0, l = _animations.length; i < l; i++) {
+            _animations[i].animate(status.fps);
             if (stop === true) {
                 _animations.splice(i, 1);
                 i--;
