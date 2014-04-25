@@ -14,7 +14,7 @@
 <script>
     render = new RenderCanvas([$(".bg-canvas")[0], $(".fg-canvas")[0]]);
     var anim = new Animation(render, Utils);
-    for (var i = 0; i < 10000; i += 100) {
+    for (var i = 0; i < 10000000; i += 100) {
         var testLine = new Rectangle(Point(50 + i, 50 + i), 150, 100, "#414141", 3);
         render.addObject(testLine);
         anim.rotate(testLine, 360, 10000);

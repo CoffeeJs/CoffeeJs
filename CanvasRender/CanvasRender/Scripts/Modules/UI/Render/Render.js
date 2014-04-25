@@ -7,6 +7,10 @@
     var _events = { onInvalidate: "onInvalidate" };
     var eventManager = new EventManager();
 
+    this.getRect = function () {
+        return Rect(0, 0, _buffers[0].width, _buffers[0].height);
+    }
+
     this.getContext = (function () {
         var aktBuffer = 0;
 
@@ -27,7 +31,10 @@
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
         for (var i = 0, l = _objects.length; i < l; i++) {
-            _objects[i].draw(ctx);
+            if (_objects[i].isOnCanvas(self.getRect()))
+                _objects[i].draw(ctx);
+            else
+                ;
         }
         eventManager.trigger(_events.onInvalidate, {
             context: ctx,
@@ -47,12 +54,6 @@
         _objects.push(obj);
         _invalid = true;
     };
-    this.renderByHand = function () {
-        for (var i = 0; i < 100; i++) {
-            self.invalidate();
-            //Utils.sleep(1);
-        }
-    }
 
     this.render = function () {
         setInterval(function () {
@@ -76,7 +77,19 @@ function Rect(x, y, width, height) {
         x: x,
         y: y,
         width: width,
-        height: height
+        height: height,
+        left: function () {
+            return x;
+        },
+        right: function () {
+            return x + width;
+        },
+        top: function () {
+            return y;
+        },
+        bottom: function () {
+            return y + height;
+        }
     }
 }
 

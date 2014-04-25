@@ -18,19 +18,23 @@
 
     this.rotate = function (obj, deg, t) {
         var id = utils.getGuid();
-        var dDeg = deg / (t / 50);
         _animations.push({
             id: id,
             animate: function (fps) {
                 if (obj.angle >= deg)
-                    return;
-                obj.rotate(obj.angle + dDeg)
+                    return true;
+                var dDeg = deg / (t / fps);
+
+                obj.rotate(obj.angle + dDeg);
+                return false;
             }
         });
     }
 
     render.onInvalidate(function (status) {
         for (var i = 0; i < _animations.length; i++) {
+            if (i > 5)
+                continue;
             var stop = _animations[i].animate(status.fps);
             if (stop === true) {
                 _animations.splice(i, 1);

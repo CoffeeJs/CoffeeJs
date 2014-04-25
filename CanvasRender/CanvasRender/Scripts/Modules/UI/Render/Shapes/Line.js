@@ -7,6 +7,14 @@
     this.color = color || "black";
     this.lineWidth = lineWidth || 1;
 
+    this.isOnCanvas = function (canvasRect) {
+        var rect = self.getRect();
+        return !(canvasRect.left() > rect.right() ||
+                 canvasRect.right() < rect.left() ||
+                 canvasRect.top() > rect.bottom() ||
+                 canvasRect.bottom() < rect.top());
+    }
+
     this.getCenter = function () {
         var rect = self.getRect();
         return Point(rect.x + (rect.width) / 2, rect.y + (rect.height) / 2);

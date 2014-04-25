@@ -18,6 +18,14 @@
         return Rect(self.position.x, self.position.y, self.width, self.height);
     }
 
+    this.isOnCanvas = function (canvasRect) {
+        var rect = self.getRect();
+        return !(canvasRect.left() > rect.right() ||
+                 canvasRect.right() < rect.left() ||
+                 canvasRect.top() > rect.bottom() ||
+                 canvasRect.bottom() < rect.top());
+    }
+
     this.draw = function (ctx) {
         ctx.save();
         if (self.rotateFunction)
