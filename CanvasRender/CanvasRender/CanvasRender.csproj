@@ -212,8 +212,11 @@
     <Content Include="Scripts\Modules\EventManager.js" />
     <Content Include="Scripts\Modules\UI\Render\Animation.js" />
     <Content Include="Scripts\Modules\UI\Render\Render.js" />
+    <Content Include="Scripts\Modules\UI\Render\Shapes\Arc.js" />
+    <Content Include="Scripts\Modules\UI\Render\Shapes\Image.js" />
     <Content Include="Scripts\Modules\UI\Render\Shapes\Line.js" />
     <Content Include="Scripts\Modules\UI\Render\Shapes\Rectangle.js" />
+    <Content Include="Scripts\Modules\UI\Render\Shapes\Shape.js" />
     <Content Include="Scripts\Modules\Utility\array.js" />
     <Content Include="Scripts\Modules\Utility\general.js" />
     <Content Include="Scripts\Modules\Utility\graphics.js" />

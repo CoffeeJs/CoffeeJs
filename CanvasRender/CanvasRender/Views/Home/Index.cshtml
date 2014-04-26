@@ -14,9 +14,10 @@
 <script>
     render = new RenderCanvas([$(".bg-canvas")[0], $(".fg-canvas")[0]]);
     for (var i = 0; i < 1; i++) {
-        var testLine = new Rectangle(250 + (i * 100), 150 + (i * 100), 150, 100, "#414141", null, 3);
+        var testLine = new Image("./Images/test.png", 100 + (i * 100), 100 + (i * 100), 100, 100);
         render.addObject(testLine);
-        testLine.scaleShape(5, 2, 10000);
+        testLine.moveShape(0, 400, 5000);
+        testLine.moveShape(400, 0, 5000);
     }
     render.render();
 </script>
