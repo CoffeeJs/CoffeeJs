@@ -208,6 +208,7 @@
     <Content Include="Scripts\knockout-2.2.0.debug.js" />
     <Content Include="Scripts\knockout-2.2.0.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
+    <Content Include="Scripts\Modules\Class.js" />
     <Content Include="Scripts\Modules\EventManager.js" />
     <Content Include="Scripts\Modules\UI\Render\Animation.js" />
     <Content Include="Scripts\Modules\UI\Render\Render.js" />

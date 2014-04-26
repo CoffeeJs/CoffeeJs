@@ -48,6 +48,3 @@
         ctx.restore();
     }
 }
-
-Line.prototype = new CanvasObject();
-Line.prototype.constructor = Line;

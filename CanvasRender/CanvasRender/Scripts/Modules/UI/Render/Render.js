@@ -32,9 +32,7 @@
 
         for (var i = 0, l = _objects.length; i < l; i++) {
             if (_objects[i].isOnCanvas(self.getRect()))
-                _objects[i].draw(ctx);
-            else
-                ;
+                _objects[i].draw(ctx, _FPS);
         }
         eventManager.trigger(_events.onInvalidate, {
             context: ctx,
@@ -47,7 +45,7 @@
     }
 
     this.addObject = function (obj) {
-        if (!(obj instanceof CanvasObject)) {
+        if (!(obj instanceof Shape)) {
             console.log("An object on the canvas should be inherited from CanvasObject!");
             return;
         }
@@ -93,53 +91,74 @@ function Rect(x, y, width, height) {
     }
 }
 
-function TransformationObject() {
-    var self = this;
+var transformationType = { rotate: "rotate", scale: "scale" };
 
-    this.angle = 0;
+var Shape = Class.extend({
+    init: function (x, y, width, height) {
 
-    this.rotateFunction = null;
-    this.scaleFunction = null;
+        this._transformation = [];
+        this.position = Point(x, y);
+        this.width = width;
+        this.height = height;
+        this.angle = 0;
+        this.scale = { width: 1, height: 1 };
+    },
+    getCenter: function () {
+        var rect = this.getRect();
+        return Point(rect.x + (rect.width) / 2, rect.y + (rect.height) / 2);
+    },
+    getRect: function () {
+        return Rect(this.position.x, this.position.y, this.width, this.height);
+    },
+    isOnCanvas: function (canvasRect) {
+        var rect = this.getRect();
+        return !(canvasRect.left() > rect.right() ||
+                 canvasRect.right() < rect.left() ||
+                 canvasRect.top() > rect.bottom() ||
+                 canvasRect.bottom() < rect.top());
+    },
 
-    this.rotate = function (deg) {
-        self.rotateFunction = function (ctx, obj) {
-            var o = obj.getCenter();
-            ctx.translate(o.x, o.y);
-            ctx.rotate(Utils.convertToRad(deg));
-            ctx.translate(-o.x, -o.y);
-            self.angle = deg;
-        };
+    rotateShape: function (deg, time) {
+        var self = this;
+        var time = time || 50;
+        if (this._transformation.filter(function (item) { return item.type == transformationType.rotate; }).length === 0)
+            this._transformation.push({
+                type: transformationType.rotate,
+                transform: function (ctx, fps) {
+                    var dDeg = deg / (time / fps);
+                    var rotAngle = self.angle;
+                    if (self.angle <= deg)
+                        rotAngle += dDeg;
+                    var o = self.getCenter();
+                    ctx.translate(o.x, o.y);
+                    ctx.rotate(Utils.convertToRad(rotAngle));
+                    ctx.translate(-o.x, -o.y);
+                    self.angle = rotAngle;
+                }
+            });
+    },
+    scaleShape: function (width, height, time) {
+        var self = this;
+        var time = time || 50;
+        if (this._transformation.filter(function (item) { return item.type == transformationType.scale; }).length === 0)
+            this._transformation.push({
+                type: transformationType.scale,
+                transform: function (ctx, fps) {
+                    var dWidth = width / (time / fps);
+                    var dHeight = height / (time / fps);
+                    var scaleWidth = self.scale.width;
+                    var scaleHeight = self.scale.height;
+                    if (self.scale.width <= width)
+                        scaleWidth += dWidth;
+                    if (self.scale.height <= height)
+                        scaleHeight += dHeight;
+
+                    var o = self.getCenter();
+                    ctx.translate(o.x, o.y);
+                    ctx.scale(scaleWidth, scaleHeight);
+                    ctx.translate(-o.x, -o.y);
+                    self.scale = { width: scaleWidth, height: scaleHeight };
+                }
+            });
     }
-
-    this.scale = function (width, height) {
-        self.scaleFunction = function (ctx, obj) {
-            var o = obj.getCenter();
-            ctx.translate(o.x, o.y);
-            ctx.scale(width, height);
-            ctx.translate(-o.x, -o.y);
-        }
-    }
-}
-
-function CanvasObject() {
-
-    this.position = Point(0, 0);
-    this.width = 0;
-    this.height = 0;
-
-    this.getCenter = function () {
-
-    }
-
-    this.draw = function (ctx) {
-    }
-
-    this.destroy = function (ctx) {
-
-    }
-
-
-}
-
-CanvasObject.prototype = new TransformationObject();
-CanvasObject.prototype.constructor = CanvasObject;
+});
