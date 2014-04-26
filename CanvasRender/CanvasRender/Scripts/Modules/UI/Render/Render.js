@@ -31,7 +31,7 @@
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
         for (var i = 0, l = _objects.length; i < l; i++) {
-            if (_objects[i].isOnCanvas(self.getRect()))
+            //if (_objects[i].isOnCanvas(self.getRect()))
                 _objects[i].draw(ctx, _FPS);
         }
         eventManager.trigger(_events.onInvalidate, {

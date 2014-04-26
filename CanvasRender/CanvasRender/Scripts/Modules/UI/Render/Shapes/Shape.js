@@ -43,9 +43,10 @@ var Shape = Class.extend({
     *Move the shape with the given distances in pixels, during the time
     *-dX move horizontally
     *-dY move vertically
+    *-f move function
     *-t animation time
     */
-    moveShape: function (dX, dY, t) {
+    moveShape: function (dX, dY, t, f) {
         var self = this;
         var orig = Point(0, 0);
         if (this._transformation.filter(function (item) { return item.type == transformationType.move; }).length === 0)
@@ -59,6 +60,26 @@ var Shape = Class.extend({
                         self.position.y += d.y;
                     orig.x += Math.abs(d.x);
                     orig.y += Math.abs(d.y);
+                }
+            });
+    },
+
+    /*
+    *Move the shape with the given distances in pixels, during the time
+    *-dX move horizontally
+    *-dY move vertically
+    *-f move function
+    *-t animation time
+    */
+    movePath: function (f, t) {
+        var self = this;
+        if (this._transformation.filter(function (item) { return item.type == transformationType.move; }).length === 0)
+            this._transformation.push({
+                type: transformationType.move,
+                transform: function (ctx, fps) {
+                    var d = f(self.position.x, self.position.y, self.width, self.height, t / fps);
+                    self.position.x = d.x;
+                    self.position.y = d.y;
                 }
             });
     },

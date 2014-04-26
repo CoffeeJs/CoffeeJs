@@ -16,8 +16,13 @@
     for (var i = 0; i < 1; i++) {
         var testLine = new Image("./Images/test.png", 100 + (i * 100), 100 + (i * 100), 100, 100);
         render.addObject(testLine);
-        testLine.moveShape(0, 400, 5000);
-        testLine.moveShape(400, 0, 5000);
+        var angle = 0;
+        var r = 300;
+        testLine.movePath(function (x, y, width, height, t) {
+            var v = Point(r * (Math.sin(Utils.convertToRad(angle))), r * (Math.cos(Utils.convertToRad(angle))));
+            angle += 360 / t;
+            return v;
+        }, 10000);
     }
     render.render();
 </script>
