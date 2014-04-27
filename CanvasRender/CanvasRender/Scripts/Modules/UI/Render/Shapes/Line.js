@@ -21,8 +21,8 @@ var Line = Shape.extend({
         for (var i = 0; i < this._transformation.length; i++)
             this._transformation[i].transform(ctx, fps);
 
-        var posStart = Point(this.position.x, this.position.y);
-        var posEnd = Point(this.position.x + this.width, this.position.y + this.height);
+        var posStart = Point(this.x, this.y);
+        var posEnd = Point(this.x + this.width, this.y + this.height);
         if (this.lineWidth % 2 != 0) {
             posStart.x += 0.5;
             posStart.y += 0.5;

@@ -8,7 +8,8 @@ var Shape = Class.extend({
     init: function (x, y, width, height) {
 
         this._transformation = [];
-        this.position = Point(x, y);
+        this.x = x
+        this.y = y;
         this.width = width;
         this.height = height;
         this.angle = 0;
@@ -18,27 +19,51 @@ var Shape = Class.extend({
     *Returns with the center point of the shape
     */
     getCenter: function () {
-        var rect = this.getRect();
-        return Point(rect.x + (rect.width) / 2, rect.y + (rect.height) / 2);
+        return Point(this.x + (this.width) / 2, this.y + (this.height) / 2);
     },
     /*
     *Returns with the rect around the shape
     */
     getRect: function () {
-        return Rect(this.position.x, this.position.y, this.width, this.height);
+        return Rect(this.x, this.y, this.width, this.height);
     },
     /*
-    *Check if the shape is on the canvas and it needs to draw or not
-    *-canvasRect is a Rect object with x, y, width, height
+    *Check if the shape is intersect the given rect
+    *-rect is a Rect object
     */
-    isOnCanvas: function (canvasRect) {
-        var rect = this.getRect();
-        return !(canvasRect.left() > rect.right() ||
-                 canvasRect.right() < rect.left() ||
-                 canvasRect.top() > rect.bottom() ||
-                 canvasRect.bottom() < rect.top());
+    rectIntersect: function (r) {
+        var tw = this.width;
+        var th = this.height;
+        var rw = r.width;
+        var rh = r.height;
+        if (rw <= 0 || rh <= 0 || tw <= 0 || th <= 0) {
+            return false;
+        }
+        var tx = this.x;
+        var ty = this.y;
+        var rx = r.x;
+        var ry = r.y;
+        rw += rx;
+        rh += ry;
+        tw += tx;
+        th += ty;
+        //overflow || intersect
+        return ((rw < rx || rw > tx) &&
+        (rh < ry || rh > ty) &&
+        (tw < tx || tw > rx) &&
+        (th < ty || th > ry));
     },
-
+    /*
+    *Check if the point is in the rect
+    *-point
+    */
+    pointIntersect: function (point) {
+        var rect = this.getRect();
+        return (point.x >= rect.left() &&
+            point.x <= rect.right() &&
+            point.y >= rect.top() &&
+            point.y <= rect.bottom());
+    },
     /*
     *Move the shape with the given distances in pixels, during the time
     *-dX move horizontally
@@ -55,9 +80,9 @@ var Shape = Class.extend({
                 transform: function (ctx, fps) {
                     var d = Point(dX / (t / fps), dY / (t / fps));
                     if (orig.x <= Math.abs(dX))
-                        self.position.x += d.x;
+                        self.x += d.x;
                     if (orig.y <= Math.abs(dY))
-                        self.position.y += d.y;
+                        self.y += d.y;
                     orig.x += Math.abs(d.x);
                     orig.y += Math.abs(d.y);
                 }
@@ -77,9 +102,9 @@ var Shape = Class.extend({
             this._transformation.push({
                 type: transformationType.move,
                 transform: function (ctx, fps) {
-                    var d = f(self.position.x, self.position.y, self.width, self.height, t / fps);
-                    self.position.x = d.x;
-                    self.position.y = d.y;
+                    var d = f(self.x, self.y, self.width, self.height, t, fps);
+                    self.x = d.x;
+                    self.y = d.y;
                 }
             });
     },

@@ -22,11 +22,11 @@ var Rectangle = Shape.extend({
         for (var i = 0; i < this._transformation.length; i++)
             this._transformation[i].transform(ctx, fps);
 
-        ctx.moveTo(this.position.x, this.position.y);
+        ctx.moveTo(this.x, this.y);
         if (this.color)
-            ctx.strokeRect(this.position.x, this.position.y, this.width, this.height);
+            ctx.strokeRect(this.x, this.y, this.width, this.height);
         if (this.fillColor)
-            ctx.fillRect(this.position.x, this.position.y, this.width, this.height);
+            ctx.fillRect(this.x, this.y, this.width, this.height);
         ctx.lineWidth = this.lineWidth;
         ctx.strokeStyle = this.color;
         ctx.fillStyle = this.fillColor;

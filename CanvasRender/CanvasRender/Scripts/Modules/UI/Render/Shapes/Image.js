@@ -24,7 +24,7 @@ var Image = Shape.extend({
         ctx.save();
         for (var i = 0; i < this._transformation.length; i++)
             this._transformation[i].transform(ctx, fps);
-        ctx.drawImage(this.image, this.position.x, this.position.y);
+        ctx.drawImage(this.image, this.x, this.y);
         ctx.restore();
     }
 });

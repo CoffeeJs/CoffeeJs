@@ -13,16 +13,28 @@
 </div>
 <script>
     render = new RenderCanvas([$(".bg-canvas")[0], $(".fg-canvas")[0]]);
-    for (var i = 0; i < 1; i++) {
-        var testLine = new Image("./Images/test.png", 100 + (i * 100), 100 + (i * 100), 100, 100);
-        render.addObject(testLine);
-        var angle = 0;
-        var r = 300;
-        testLine.movePath(function (x, y, width, height, t) {
-            var v = Point(r * (Math.sin(Utils.convertToRad(angle))), r * (Math.cos(Utils.convertToRad(angle))));
-            angle += 360 / t;
-            return v;
-        }, 10000);
+    render.onClick(function (data) {
+        console.log(data.object);
+    });
+    for (var i = 0; i < 10000; i++) {
+        var image = new Image("./Images/test.png", (Math.random() * 1000) + 15, (Math.random() * 800) + 40, 100, 100);
+        var circle = new Arc(165 + i * 100, 165 + i * 100, 150, 0, 360, "#414141");
+        //var rect = new Rectangle(400, 400, 200, 200, "#414141");
+        render.addObject(circle);
+        //render.addObject(rect);
+        render.addObject(image);
+        image.direction = 1;
+        var r = 150;
+        (function (ox, oy, img) {
+            image.movePath(function (x, y, width, height, t, fps) {
+                //var v = Point(r * (Math.sin(Utils.convertToRad(img.aangle))) + ox, r * (Math.cos(Utils.convertToRad(img.aangle))) + oy);
+                x += img.direction * (1200 / (t / fps));
+                var v = Point(x, y);
+                if (x < 0 || x > 1170)
+                    img.direction *= -1;
+                return v;
+            }, 50000);
+        }(circle.x + 135, circle.y + 135, image));
     }
     render.render();
 </script>
