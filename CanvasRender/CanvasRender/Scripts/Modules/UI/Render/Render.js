@@ -11,10 +11,10 @@
 
     var fillGrid = function () {
         gridCanvas = [];
-        var width = self.getCanvas().width / 4;
-        var height = self.getCanvas().height / 4;
-        for (var i = 0; i < 4; i++) {
-            for (var j = 0; j < 4; j++) {
+        var width = self.getCanvas().width / 1;
+        var height = self.getCanvas().height / 1;
+        for (var i = 0; i < 1; i++) {
+            for (var j = 0; j < 1; j++) {
                 gridCanvas.push({
                     rect: Rect(i * width, j * height, width, height),
                     items: []
@@ -91,24 +91,23 @@
 
         self.drawFps(ctx);
 
-        //for (var i = 0; i < gridCanvas.length; i++) {
-        //    //if (_objects[i].rectIntersect(self.getRect()))
-        //    for (var j = 0; j < gridCanvas[i].items.length; j++) {
-        //        gridCanvas[i].items[j].draw(ctx, _FPS);
-        //    }
-        //}
-
-        var l = _objects.length / 4;
-        while (l--) {
-            if (_objects[i].rectIntersect(self.getRect()))
-                _objects[l].draw(ctx, _FPS);
+        for (var i = 0; i < gridCanvas.length; i++) {
+            //if (_objects[i].rectIntersect(self.getRect()))
+            for (var j = 0; j < gridCanvas[i].items.length; j++) {
+                gridCanvas[i].items[j].draw(ctx, _FPS);
+            }
         }
+
+        //var l = _objects.length;
+        //while (l--) {
+        //    if (_objects[i].rectIntersect(self.getRect()))
+        //        _objects[l].draw(ctx, _FPS);
+        //}
 
         eventManager.trigger(_events.onInvalidate, {
             context: ctx,
             fps: _FPS
         });
-
         updateGrid();
         requestAnimationFrame(self.invalidate);
     };
@@ -143,9 +142,6 @@
     this.render = function () {
         fillGrid();
         self.invalidate();
-        //setInterval(function () {
-        //    self.invalidate();
-        //}, 1000 / _FPS);
     }
 }
 
