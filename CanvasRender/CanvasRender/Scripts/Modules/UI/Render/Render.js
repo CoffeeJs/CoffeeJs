@@ -22,7 +22,7 @@
             }
         }
     }
-    
+
     var updateGrid = function () {
         for (var k = 0; k < gridCanvas.length; k++) {
             gridCanvas[k].items = [];
@@ -89,7 +89,7 @@
         var ctx = self.getCanvas(true).getContext("2d");
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-        this.drawFps(ctx);
+        self.drawFps(ctx);
 
         //for (var i = 0; i < gridCanvas.length; i++) {
         //    //if (_objects[i].rectIntersect(self.getRect()))
@@ -98,21 +98,19 @@
         //    }
         //}
 
-        var l = _objects.length;
+        var l = _objects.length / 4;
         while (l--) {
-            _objects[l].draw(ctx, _FPS);
+            if (_objects[i].rectIntersect(self.getRect()))
+                _objects[l].draw(ctx, _FPS);
         }
 
-        //for (var i = _objects.length - 1; i >= 0 ; i--) {
-        //    //if (_objects[i].rectIntersect(self.getRect()))
-        //    _objects[i].draw(ctx, _FPS);
-        //}
         eventManager.trigger(_events.onInvalidate, {
             context: ctx,
             fps: _FPS
         });
 
         updateGrid();
+        requestAnimationFrame(self.invalidate);
     };
 
     this.drawFps = function (ctx) {
@@ -144,9 +142,10 @@
 
     this.render = function () {
         fillGrid();
-        setInterval(function () {
-            self.invalidate();
-        }, 1000 / _FPS);
+        self.invalidate();
+        //setInterval(function () {
+        //    self.invalidate();
+        //}, 1000 / _FPS);
     }
 }
 
