@@ -6,41 +6,52 @@ var Shape = Class.extend({
     *Constructor
     */
     init: function (x, y, width, height) {
+        var self = this;
 
         this._transformation = [];
-        this.x = x
-        this.y = y;
-        this.width = width;
-        this.height = height;
+        this.x = Observable(x);
+        this.y = Observable(y);
+        this.width = Observable(width);
+        this.height = Observable(height);
         this.angle = 0;
         this.scale = { width: 1, height: 1 };
+        this.invalid = true;
+
+        this.x.subscribe(function () {
+            self.invalid = true;
+        });
+    },
+    setTransformations: function (ctx, fps) {
+        //ctx.save();
+        for (var i = 0; i < this._transformation.length; i++)
+            this._transformation[i].transform(ctx, fps);
     },
     /*
     *Returns with the center point of the shape
     */
     getCenter: function () {
-        return Point(this.x + (this.width) / 2, this.y + (this.height) / 2);
+        return Point(this.x() + (this.width()) / 2, this.y() + (this.height()) / 2);
     },
     /*
     *Returns with the rect around the shape
     */
     getRect: function () {
-        return Rect(this.x, this.y, this.width, this.height);
+        return Rect(this.x(), this.y(), this.width(), this.height());
     },
     /*
     *Check if the shape is intersect the given rect
     *-rect is a Rect object
     */
     rectIntersect: function (r) {
-        var tw = this.width;
-        var th = this.height;
+        var tw = this.width();
+        var th = this.height();
         var rw = r.width;
         var rh = r.height;
         if (rw <= 0 || rh <= 0 || tw <= 0 || th <= 0) {
             return false;
         }
-        var tx = this.x;
-        var ty = this.y;
+        var tx = this.x();
+        var ty = this.y();
         var rx = r.x;
         var ry = r.y;
         rw += rx;
@@ -80,9 +91,9 @@ var Shape = Class.extend({
                 transform: function (ctx, fps) {
                     var d = Point(dX / (t / fps), dY / (t / fps));
                     if (orig.x <= Math.abs(dX))
-                        self.x += d.x;
+                        self.x(self.x() + d.x);
                     if (orig.y <= Math.abs(dY))
-                        self.y += d.y;
+                        self.y(self.y() + d.y);
                     orig.x += Math.abs(d.x);
                     orig.y += Math.abs(d.y);
                 }
@@ -102,9 +113,9 @@ var Shape = Class.extend({
             this._transformation.push({
                 type: transformationType.move,
                 transform: function (ctx, fps) {
-                    var d = f(self.x, self.y, self.width, self.height, t, fps);
-                    self.x = d.x;
-                    self.y = d.y;
+                    var d = f(self.x(), self.y(), self.width, self.height, t, fps);
+                    self.x(d.x);
+                    self.y(d.y);
                 }
             });
     },

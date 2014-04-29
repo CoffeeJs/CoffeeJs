@@ -11,8 +11,8 @@ var Image = Shape.extend({
         this.image = document.createElement("img");
         this.image.src = url;
         this.image.onload = function () {
-            self.width = self.image.width;
-            self.height = self.image.height;
+            self.width(self.image.width);
+            self.height(self.image.height);
         };
     },
     /*
@@ -21,10 +21,9 @@ var Image = Shape.extend({
     *-fps is the frame per second
     */
     draw: function (ctx, fps) {
-        ctx.save();
-        for (var i = 0; i < this._transformation.length; i++)
-            this._transformation[i].transform(ctx, fps);
-        ctx.drawImage(this.image, this.x, this.y);
-        ctx.restore();
+        //ctx.clearRect(this.x(), this.y(), this.width(), this.height());
+
+        ctx.drawImage(this.image, this.x(), this.y());
+        this.invalid = false;
     }
 });

@@ -1,121 +1,88 @@
-﻿var RenderCanvas = function (buffers) {
+﻿var RenderCanvas = function (width, height) {
     var self = this;
 
     var _FPS = 50;
     var _objects = [];
-    var _buffers = buffers;
     var _events = { onInvalidate: "onInvalidate", onClick: "onClick" };
     var eventManager = new EventManager();
+    var _layers = [];
+    //var getMousePos = function (canvas, evt) {
+    //    var rect = canvas.getBoundingClientRect();
+    //    return {
+    //        x: evt.clientX - rect.left,
+    //        y: evt.clientY - rect.top
+    //    };
+    //}
 
-    var gridCanvas = [];
+    //for (var i = 0; i < _buffers.length; i++) {
+    //    _buffers[i].onclick = function (event) {
+    //        for (var i = _objects.length - 1; i >= 0; i--) {
+    //            if (_objects[i].pointIntersect(getMousePos(event.target, event))) {
+    //                eventManager.trigger(_events.onClick, {
+    //                    position: getMousePos(event.target, event),
+    //                    object: _objects[i]
+    //                });
+    //                return;
+    //            }
+    //        }
+    //    };
+    //}
 
-    var fillGrid = function () {
-        gridCanvas = [];
-        var width = self.getCanvas().width / 1;
-        var height = self.getCanvas().height / 1;
-        for (var i = 0; i < 1; i++) {
-            for (var j = 0; j < 1; j++) {
-                gridCanvas.push({
-                    rect: Rect(i * width, j * height, width, height),
-                    items: []
-                });
-            }
-        }
+    this.getFps = function () {
+        return Utils.getFps(_FPS) || _FPS;
     }
-
-    var updateGrid = function () {
-        for (var k = 0; k < gridCanvas.length; k++) {
-            gridCanvas[k].items = [];
-        }
-
-        for (var i = _objects.length - 1; i >= 0; i--) {
-            var item = _objects[i];
-            for (var j = gridCanvas.length - 1; j >= 0; j--) {
-                if (item.rectIntersect(gridCanvas[j].rect)) {
-                    gridCanvas[j].items.push(item);
-                }
-            }
-        }
-    }
-
-    var getMousePos = function (canvas, evt) {
-        var rect = canvas.getBoundingClientRect();
-        return {
-            x: evt.clientX - rect.left,
-            y: evt.clientY - rect.top
-        };
-    }
-
-    for (var i = 0; i < _buffers.length; i++) {
-        _buffers[i].onclick = function (event) {
-            for (var i = _objects.length - 1; i >= 0; i--) {
-                if (_objects[i].pointIntersect(getMousePos(event.target, event))) {
-                    eventManager.trigger(_events.onClick, {
-                        position: getMousePos(event.target, event),
-                        object: _objects[i]
-                    });
-                    return;
-                }
-            }
-        };
-    }
-
-
 
     this.getRect = function () {
         return Rect(0, 0, _buffers[0].width, _buffers[0].height);
     }
 
-    this.getCanvas = (function () {
-        var aktBuffer = 0;
-
-        return function (buffering) {
-            return _buffers[aktBuffer];
-
-            //if (buffering === true) {
-            //    _buffers[1 - aktBuffer].style.visibility = 'hidden';
-            //    _buffers[1 - aktBuffer].style.zIndex = 0;
-            //    _buffers[aktBuffer].style.visibility = 'visible';
-            //    _buffers[aktBuffer].style.zIndex = 100;
-
-            //    aktBuffer = 1 - aktBuffer;
-            //}
-
-            //return _buffers[aktBuffer];
+    var createLayers = function () {
+        _layers = [];
+        $("canvas", "#viewport").remove();
+        $("#viewport").width(width);
+        $("#viewport").height(height);
+        for (var i = 0, l = Math.ceil(_objects.length / 5000) ; i < l; i++) {
+            var canvas = document.createElement("canvas");
+            canvas.width = width;
+            canvas.height = height;
+            _layers.push({
+                ctx: canvas.getContext("2d"),
+                objects: _objects.slice(i * 5000, (i + 1) * 5000)
+            });
+            $("#viewport").append(canvas);
         }
-    }());
+    };
 
     this.invalidate = function () {
-        var ctx = self.getCanvas(true).getContext("2d");
-        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        //var rect = self.getRect();
+        //var modifiedObjects = _objects.filter(function (item) {
+        //    item.setTransformations(ctx, _FPS);
+        //    return item.invalid && item.rectIntersect(rect);
+        //});
+        //updateGrid(_objects);
+        for (var i = 0; i < _layers.length; i++) {
+            var layer = _layers[i];
+            var ctx = layer.ctx;
+            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            if (i == 0)
+                self.refreshFps(ctx);
 
-        self.drawFps(ctx);
-
-        for (var i = 0; i < gridCanvas.length; i++) {
-            //if (_objects[i].rectIntersect(self.getRect()))
-            for (var j = 0; j < gridCanvas[i].items.length; j++) {
-                gridCanvas[i].items[j].draw(ctx, _FPS);
+            for (var j = 0, l = layer.objects.length; j < l; j++) {
+                layer.objects[j].setTransformations(ctx, _FPS);
+                layer.objects[j].draw(ctx, _FPS);
             }
         }
-
-        //var l = _objects.length;
-        //while (l--) {
-        //    if (_objects[i].rectIntersect(self.getRect()))
-        //        _objects[l].draw(ctx, _FPS);
-        //}
 
         eventManager.trigger(_events.onInvalidate, {
             context: ctx,
             fps: _FPS
         });
-        updateGrid();
         requestAnimationFrame(self.invalidate);
     };
 
-    this.drawFps = function (ctx) {
+    this.refreshFps = function (ctx) {
         var fps = Utils.getFps(_FPS);
-
-        var x = self.getCanvas().width - 100;
+        var x = width - 100;
         var y = 20;
         ctx.fillStyle = "#A1A892";
         ctx.font = "bold 10pt Verdana";
@@ -136,11 +103,10 @@
             return;
         }
         _objects.push(obj);
-        _invalid = true;
+        createLayers();
     };
 
     this.render = function () {
-        fillGrid();
         self.invalidate();
     }
 }
