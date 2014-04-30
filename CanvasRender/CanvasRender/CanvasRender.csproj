@@ -223,6 +223,8 @@
     <Content Include="Scripts\Modules\Utility\graphics.js" />
     <Content Include="Scripts\Modules\Utility\number.js" />
     <Content Include="Scripts\Modules\Utility\string.js" />
+    <Content Include="Scripts\svg\main.js" />
+    <Content Include="Scripts\svg\vspace.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
