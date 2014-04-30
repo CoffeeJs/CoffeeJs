@@ -10,7 +10,7 @@
     render.onClick(function (data) {
         console.log(data.object);
     });
-    for (var i = 0; i < 5000; i++) {
+    for (var i = 0; i < 100000; i++) {
         var image = new Image("/CanvasRender/Images/test.png", (Math.random() * 1000) + 15, (Math.random() * 800) + 40, 100, 100);
         //var circle = new Arc(165 + i * 100, 165 + i * 100, 150, 0, 360, "#414141");
         //var rect = new Rectangle(400, 400, 200, 200, "#414141");
@@ -19,7 +19,7 @@
         render.addObject(image);
         image.direction = 1;
         var r = 150;
-        //if (i < 5000) {
+        if (i < 1000) {
             (function (img) {
                 image.movePath(function (x, y, width, height, t, fps) {
                     //var v = Point(r * (Math.sin(Utils.convertToRad(img.aangle))) + ox, r * (Math.cos(Utils.convertToRad(img.aangle))) + oy);
@@ -30,7 +30,7 @@
                     return v;
                 }, 10000);
             }(image));
-        //}
+        }
     }
     render.render();
 </script>
