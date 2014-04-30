@@ -14,6 +14,8 @@
         var image = new Image("Images/test.png", (Math.random() * 1000) + 15, (Math.random() * 800) + 40, 100, 100);
         render.addObject(image);
         image.direction = 1;
+        render.addObject(image);
+        image.direction = 1;
         //if (i < 5000) {
             (function (img) {
                 image.movePath(function (x, y, width, height, t, fps) {
