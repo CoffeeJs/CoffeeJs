@@ -16,5 +16,10 @@ namespace CanvasRender.Controllers
             return View();
         }
 
+        public ActionResult svg()
+        {
+            return View();
+        }
+
     }
 }
