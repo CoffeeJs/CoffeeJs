@@ -21,8 +21,6 @@ var Image = Shape.extend({
     *-fps is the frame per second
     */
     draw: function (ctx, fps) {
-        //ctx.clearRect(this.x(), this.y(), this.width(), this.height());
-
         ctx.drawImage(this.image, this.x(), this.y());
         this.invalid = false;
     }
