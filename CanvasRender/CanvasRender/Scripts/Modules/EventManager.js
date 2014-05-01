@@ -21,8 +21,8 @@ var EventManager;
             context: (context ? context : scope)
         });
     },
-    unsubscribe: function (type) {
-        listeners.splice(listeners.indexOf(type), 1);
+    unsubscribe: function (type, handler) {
+        this.listeners[type].splice(this.listeners[type].indexOf(handler), 1);
     },
     trigger: function (type, data, context) {
         var listeners, handlers, i, n, handler, scope;

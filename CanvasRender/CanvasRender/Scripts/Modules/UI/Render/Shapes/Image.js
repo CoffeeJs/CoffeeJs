@@ -1,7 +1,10 @@
-﻿/*
+﻿var RenderJs = RenderJs || {};
+RenderJs.Canvas = RenderJs.Canvas || {};
+RenderJs.Canvas.Shapes = RenderJs.Canvas.Shapes || {};
+/*
 *Represents an image, inherits from shape
 */
-var Image = Shape.extend({
+RenderJs.Canvas.Shapes.Image = RenderJs.Canvas.Shape.extend({
     /*
     *Constructor
     */
@@ -18,9 +21,8 @@ var Image = Shape.extend({
     /*
     *Function is called in every frame to redraw itself
     *-ctx is the drawing context from a canvas
-    *-fps is the frame per second
     */
-    draw: function (ctx, fps) {
+    draw: function (ctx) {
         ctx.drawImage(this.image, this.x(), this.y());
         this.invalid = false;
     }

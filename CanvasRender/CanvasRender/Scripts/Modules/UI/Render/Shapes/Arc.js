@@ -1,7 +1,11 @@
-﻿/*
+﻿var RenderJs = RenderJs || {};
+RenderJs.Canvas = RenderJs.Canvas || {};
+RenderJs.Canvas.Shapes = RenderJs.Canvas.Shapes || {};
+
+/*
 *Represents a circle shape, inherits from shape
 */
-var Arc = Shape.extend({
+RenderJs.Canvas.Shapes.Arc = RenderJs.Canvas.Shape.extend({
     /*
     *Constructor
     */
@@ -18,7 +22,7 @@ var Arc = Shape.extend({
     *Overrides the original function, because the circle center point is not the top,left corner
     */
     getCenter: function () {
-        return Point(this.x + this.width / 2, this.y + this.height / 2);
+        return RenderJs.Point(this.x + this.width / 2, this.y + this.height / 2);
     },
     /*
     *Overrides the original function

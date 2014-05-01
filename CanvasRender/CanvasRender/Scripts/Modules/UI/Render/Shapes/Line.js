@@ -1,7 +1,11 @@
-﻿/*
+﻿var RenderJs = RenderJs || {};
+RenderJs.Canvas = RenderJs.Canvas || {};
+RenderJs.Canvas.Shapes = RenderJs.Canvas.Shapes || {};
+
+/*
 *Represents a line shape, inherits from shape
 */
-var Line = Shape.extend({
+RenderJs.Canvas.Shapes.Line = RenderJs.Canvas.Shape.extend({
     /*
     *Constructor
     */
@@ -21,8 +25,8 @@ var Line = Shape.extend({
         for (var i = 0; i < this._transformation.length; i++)
             this._transformation[i].transform(ctx, fps);
 
-        var posStart = Point(this.x, this.y);
-        var posEnd = Point(this.x + this.width, this.y + this.height);
+        var posStart = RenderJs.Point(this.x, this.y);
+        var posEnd = RenderJs.Point(this.x + this.width, this.y + this.height);
         if (this.lineWidth % 2 != 0) {
             posStart.x += 0.5;
             posStart.y += 0.5;

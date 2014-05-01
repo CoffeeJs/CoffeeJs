@@ -1,125 +1,95 @@
-﻿var RenderCanvas = function (width, height) {
+﻿var RenderJs = RenderJs || {};
+RenderJs.Canvas = RenderJs.Canvas || {};
+
+RenderJs.Canvas.Stage = function (options) {
+    var self = this;
+    var options = options || {};
+    /*
+     * Locals
+     */
+    var _container = options.container || "viewport";
+    var _layers = [];
+
+    /*
+     * Imaginary layer
+     */
+    var _icanvas = document.createElement("canvas");
+    var _ictx = _icanvas.getContext("2d");
+
+    var _render = new RenderJs.Canvas.Render(this);
+
+    var init = function () {
+        document.getElementById(_container).style.width = self.width + "px";
+        document.getElementById(_container).style.height = self.height + "px";
+        _icanvas.width = this.width;
+        _icanvas.height = this.height;
+        _render.render();
+    }
+
+    this.width = options.width || 1200;
+    this.height = options.height || 800;
+
+    this.createLayer = function () {
+        var layer = new RenderJs.Canvas.Layer(_container, this.width, this.height);
+        _layers.push(layer);
+
+        return layer;
+    }
+    this.getImagiaryCtx = function () {
+        return ictx;
+    }
+    this.getLayers = function () { return _layers }
+
+    init();
+}
+
+RenderJs.Canvas.Render = function (stage) {
     var self = this;
 
     var _FPS = 50;
-    var _objects = [];
     var _events = { onInvalidate: "onInvalidate", onClick: "onClick" };
     var eventManager = new EventManager();
-    var _layers = [];
-    //var getMousePos = function (canvas, evt) {
-    //    var rect = canvas.getBoundingClientRect();
-    //    return {
-    //        x: evt.clientX - rect.left,
-    //        y: evt.clientY - rect.top
-    //    };
-    //}
 
-    //for (var i = 0; i < _buffers.length; i++) {
-    //    _buffers[i].onclick = function (event) {
-    //        for (var i = _objects.length - 1; i >= 0; i--) {
-    //            if (_objects[i].pointIntersect(getMousePos(event.target, event))) {
-    //                eventManager.trigger(_events.onClick, {
-    //                    position: getMousePos(event.target, event),
-    //                    object: _objects[i]
-    //                });
-    //                return;
-    //            }
-    //        }
-    //    };
-    //}
+    var _stage = stage;
 
     this.getFps = function () {
         return Utils.getFps(_FPS) || _FPS;
     }
 
-    this.getRect = function () {
-        return Rect(0, 0, _buffers[0].width, _buffers[0].height);
-    }
-
-    var createLayers = function () {
-        $("#viewport").width(width);
-        $("#viewport").height(height);
-        $("canvas", "#viewport").remove();
-        var canvas0 = document.createElement("canvas");
-        canvas0.id = "static";
-        var staticLayer = {
-            invalid: true,
-            isStatic: true,
-            ctx: canvas0.getContext("2d"),
-            objects: []
-        };
-        canvas0.width = width;
-        canvas0.height = height;
-        $("#viewport").append(canvas0);
-
-        var canvas1 = document.createElement("canvas");
-        canvas1.id = "dynamic";
-        var dynamicLayer = {
-            isStatic: false,
-            ctx: canvas1.getContext("2d"),
-            objects: []
-        };
-        canvas1.width = width;
-        canvas1.height = height;
-        $("#viewport").append(canvas1);
-
-        for (var i = 0, l = _objects.length; i < l; i++) {
-            var obj = _objects[i];
-            if (obj.invalid) {
-                dynamicLayer.objects.push(obj);
-            } else
-                staticLayer.objects.push(obj);
-        }
-        _layers = [staticLayer, dynamicLayer];
-    };
-
-    var updateLayers = function () {
-        var staticLayer = _layers[0];
-        var dynamicLayer = _layers[1];
-        for (var j = 0; j < staticLayer.objects.length; j++) {
-            var obj = staticLayer.objects[j];
-            if (obj.invalid) {
-                dynamicLayer.objects.push(obj);
-                staticLayer.objects.splice(j, 1);
-                j--;
-            }
-        }
-        for (var j = 0; j < dynamicLayer.objects.length; j++) {
-            var obj = dynamicLayer.objects[j];
-            if (!obj.invalid) {
-                staticLayer.objects.push(obj);
-                dynamicLayer.objects.splice(j, 1);
-                j--;
-                staticLayer.invalid = true;
-            }
-        }
-    }
     this.invalidate = function () {
-        for (var i = 0; i < _layers.length; i++) {
-            var layer = _layers[i];
-            if (layer.isStatic)
-                if (!layer.invalid)
-                    continue;
-                else
-                    layer.invalid = false;
+        var layers = _stage.getLayers();
+        for (var i = 0; i < layers.length; i++) {
+            layers[i].drawShapes(_FPS);
 
-            var ctx = layer.ctx;
-            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-            if (i == 1)
-                self.refreshFps(ctx);
+            //if (layer.isStatic)
+            //    if (!layer.invalid)
+            //        continue;
+            //    else
+            //        layer.invalid = false;
 
-            for (var j = 0, l = layer.objects.length; j < l; j++) {
-                layer.objects[j].setTransformations(ctx, _FPS);
-            }
-            updateLayers();
-            for (var j = 0, l = layer.objects.length; j < l; j++) {
-                layer.objects[j].draw(ctx, _FPS);
-            }
+            //var ctx = layer.ctx;
+            //ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            //if (i == 1)
+            //    self.refreshFps(ctx);
+
+            //for (var j = 0, l = layer.objects.length; j < l; j++) {
+            //    layer.objects[j].setTransformations(ctx, _FPS);
+            //}
+            ////updateLayers();
+            //for (var j = 0, l = layer.objects.length; j < l; j++) {
+            //    layer.objects[j].draw(ctx, _FPS);
+            //    var items = [];
+            //    for (var k = j + 1; k < l; k++) {
+            //        //if (layer.objects[j].rectIntersect(layer.objects[k].getRect()))
+            //        items.push(layer.objects[k]);
+            //    }
+            //    //
+            //    //Collision detection
+            //    for (var k = 0; k < items.length; k++) {
+            //        var colision = 0;//layer.objects[j].pixelCollision(layer.objects[k], ictx);
+            //    }
+            //}
         }
-        eventManager.trigger(_events.onInvalidate, {
-            context: ctx,
-            fps: _FPS
-        });
         requestAnimationFrame(self.invalidate);
     };
 
@@ -136,25 +106,68 @@
         eventManager.subscribe(_events.onInvalidate, handler);
     }
 
-    this.onClick = function (handler) {
-        eventManager.subscribe(_events.onClick, handler);
-    }
-
-    this.addObject = function (obj) {
-        if (!(obj instanceof Shape)) {
-            console.log("An object on the canvas should be inherited from CanvasObject!");
-            return;
-        }
-        _objects.push(obj);
-    };
-
     this.render = function () {
-        createLayers();
         self.invalidate();
     }
 }
 
-function Point(x, y) {
+RenderJs.Canvas.Layer = function (container, width, height) {
+    var _shapes = [];
+    var _initialized = false;
+    var _animated = false;
+
+    var canvas = document.createElement("canvas");
+    var ctx = canvas.getContext("2d");
+    var eventManager = new EventManager();
+
+    canvas.width = width;
+    canvas.height = height;
+    document.getElementById(container).appendChild(canvas);
+
+    this.onAnimate = function (handler) {
+        eventManager.subscribe("animate", handler);
+        _animated = true;
+    }
+
+    this.offAnimate = function (handler) {
+        eventManager.unsubscribe("animate", handler);
+        _animated = false;
+    }
+
+    this.addShape = function (shape) {
+        if (!(shape instanceof RenderJs.Canvas.Shape)) {
+            console.log("An object on the canvas should be inherited from CanvasObject!");
+            return;
+        }
+        _shapes.push(shape);
+    }
+
+    this.getCanvas = function () {
+        return canvas;
+    }
+
+    this.getShapes = function () {
+        return _shapes;
+    }
+
+    this.drawShapes = function (frame) {
+        if (_initialized && !_animated) return;
+
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+        eventManager.trigger("animate", frame);
+
+        for (var i = 0, length = _shapes.length; i < length; i++) {
+            _shapes[i].draw(ctx);
+        }
+
+        _initialized = true;
+    }
+
+
+}
+
+RenderJs.Point = function (x, y) {
     return {
         x: x || 0,
         y: y || 0,
@@ -164,7 +177,7 @@ function Point(x, y) {
     };
 }
 
-function Rect(x, y, width, height) {
+RenderJs.Rect = function (x, y, width, height) {
     return {
         x: x,
         y: y,

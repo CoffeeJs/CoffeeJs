@@ -1,7 +1,11 @@
-﻿/*
+﻿var RenderJs = RenderJs || {};
+RenderJs.Canvas = RenderJs.Canvas || {};
+RenderJs.Canvas.Shapes = RenderJs.Canvas.Shapes || {};
+
+/*
 *Represents a base class for different type of shapes
 */
-var Shape = Class.extend({
+RenderJs.Canvas.Shape = Class.extend({
     /*
     *Constructor
     */
@@ -21,22 +25,17 @@ var Shape = Class.extend({
             self.invalid = true;
         });
     },
-    setTransformations: function (ctx, fps) {
-        //ctx.save();
-        for (var i = 0; i < this._transformation.length; i++)
-            this._transformation[i].transform(ctx, fps);
-    },
     /*
     *Returns with the center point of the shape
     */
     getCenter: function () {
-        return Point(this.x() + (this.width()) / 2, this.y() + (this.height()) / 2);
+        return RenderJs.Point(this.x() + (this.width()) / 2, this.y() + (this.height()) / 2);
     },
     /*
     *Returns with the rect around the shape
     */
     getRect: function () {
-        return Rect(this.x(), this.y(), this.width(), this.height());
+        return RenderJs.Rect(this.x(), this.y(), this.width(), this.height());
     },
     /*
     *Check if the shape is intersect the given rect
@@ -76,28 +75,52 @@ var Shape = Class.extend({
             point.y <= rect.bottom());
     },
     /*
+     * Pixel collision detection(AABB)
+     */
+    pixelCollision: function (obj, ictx) {
+        ar = this.getRect();
+        br = obj.getRect();
+
+        cp = {
+            x: ar.left() < br.left() ? br.left() : ar.left(),
+            y: ar.top() < br.top() ? br.top() : ar.top(),
+            X: ar.right() < br.right() ? ar.right() : br.right(),
+            Y: ar.bottom() < br.bottom() ? ar.bottom() : br.bottom(),
+        }
+        cr = Rect(cp.x, cp.y, cp.X - cp.x, cp.Y - cp.y);
+        if (cr.width <= 0 || cr.height <= 0)
+            return false;
+        //
+        //Draw intersection part of this shape
+        ictx.clearRect(cr.x, cr.y, cr.width, cr.height);
+        this.draw(ictx);
+        var ia = ictx.getImageData(cr.x, cr.y, cr.width, cr.height);
+        //
+        //Draw intersection part of obj
+        ictx.clearRect(cr.x, cr.y, cr.width, cr.height);
+        obj.draw(ictx);
+        var ib = ictx.getImageData(cr.x, cr.y, cr.width, cr.height);
+        var resolution = 4 * 10;
+        var l = ia.data.length;
+        for (var i = 0; i < l; i += resolution) {
+            if (!ia.data[i + 3] || !ib.data[i + 3])
+                continue;
+            //Collision
+            return true;
+            break;
+        }
+    },
+    /*
     *Move the shape with the given distances in pixels, during the time
     *-dX move horizontally
     *-dY move vertically
     *-f move function
     *-t animation time
     */
-    moveShape: function (dX, dY, t, f) {
+    moveShape: function (dX, dY) {
         var self = this;
-        var orig = Point(0, 0);
-        if (this._transformation.filter(function (item) { return item.type == transformationType.move; }).length === 0)
-            this._transformation.push({
-                type: transformationType.move,
-                transform: function (ctx, fps) {
-                    var d = Point(dX / (t / fps), dY / (t / fps));
-                    if (orig.x <= Math.abs(dX))
-                        self.x(self.x() + d.x);
-                    if (orig.y <= Math.abs(dY))
-                        self.y(self.y() + d.y);
-                    orig.x += Math.abs(d.x);
-                    orig.y += Math.abs(d.y);
-                }
-            });
+        self.x(self.x() + dX);
+        self.y(self.y() + dY);
     },
 
     /*

@@ -1,31 +1,31 @@
 ﻿@{
     ViewBag.Title = "Index";
 }
-
 <h2>Index</h2>
 <div id="viewport">
 </div>
 <script>
-    render = new RenderCanvas(1200, 800);
-    render.onClick(function (data) {
-        console.log(data.object);
+    stage = new RenderJs.Canvas.Stage({
+        container: "viewport",
+        width: 1200,
+        height: 800
     });
-    for (var i = 0; i < 10000; i++) {
-        var image = new Image("CanvasRender/Images/test.png", (Math.random() * 1000) + 15, (Math.random() * 800) + 40, 100, 100);
-        render.addObject(image);
+    var layer = stage.createLayer();
+
+    for (var i = 0; i < 1000; i++) {
+        var image = new RenderJs.Canvas.Shapes.Image("Images/test.png", (Math.random() * 1000) + 15, (Math.random() * 800) + 40, 100, 100);
+        layer.addShape(image);
         image.direction = 1;
-        if (i < 1000) {
-            (function (img) {
-                image.movePath(function (x, y, width, height, t, fps) {
-                    //var v = Point(r * (Math.sin(Utils.convertToRad(img.aangle))) + ox, r * (Math.cos(Utils.convertToRad(img.aangle))) + oy);
-                    x += img.direction * (1200 / (t / fps));
-                    var v = Point(x, y);
-                    if (x < 0 || x > 1170)
-                        img.direction *= -1;
-                    return v;
-                }, 10000);
-            }(image));
-        }
+        (function (img) {
+            anim = new RenderJs.Canvas.Animation(function (frame) {
+                //var v = Point(r * (Math.sin(Utils.convertToRad(img.aangle))) + ox, r * (Math.cos(Utils.convertToRad(img.aangle))) + oy);
+                if (img.x() < 0 || img.x() > 1200)
+                    img.direction *= -1;
+                var x = img.direction * (1200 / (10000 / frame));
+                img.moveShape(x, 0);
+            }, layer);
+
+            anim.start();
+        }(image));
     }
-    render.render();
 </script>

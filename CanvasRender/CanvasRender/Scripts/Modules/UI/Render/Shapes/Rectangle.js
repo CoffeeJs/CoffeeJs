@@ -1,7 +1,11 @@
-﻿/*
+﻿var RenderJs = RenderJs || {};
+RenderJs.Canvas = RenderJs.Canvas || {};
+RenderJs.Canvas.Shapes = RenderJs.Canvas.Shapes || {};
+
+/*
 *Represents a rectangle shape, inherits from shape
 */
-var Rectangle = Shape.extend({
+RenderJs.Canvas.Shapes.Rectangle = RenderJs.Canvas.Shape.extend({
     /*
     *Constructor
     */
@@ -18,11 +22,6 @@ var Rectangle = Shape.extend({
     *-fps is the frame per second
     */
     draw: function (ctx, fps) {
-        ctx.save();
-        for (var i = 0; i < this._transformation.length; i++)
-            this._transformation[i].transform(ctx, fps);
-
-        ctx.moveTo(this.x, this.y);
         if (this.color)
             ctx.strokeRect(this.x, this.y, this.width, this.height);
         if (this.fillColor)
@@ -30,6 +29,5 @@ var Rectangle = Shape.extend({
         ctx.lineWidth = this.lineWidth;
         ctx.strokeStyle = this.color;
         ctx.fillStyle = this.fillColor;
-        ctx.restore();
     }
 });
