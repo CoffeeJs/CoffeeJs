@@ -9,12 +9,13 @@ RenderJs.Canvas.Shapes.Rectangle = RenderJs.Canvas.Shape.extend({
     /*
     *Constructor
     */
-    init: function (x, y, width, height, color, fillColor, lineWidth) {
-        this._super(x, y, width, height);
+    init: function (options) {
+        var options = options || {};
+        this._super(options.x, options.y, options.width, options.height);
 
-        this.color = color;
-        this.fillColor = fillColor;
-        this.lineWidth = lineWidth || 1;
+        this.color = options.color;
+        this.fillColor = options.fillColor;
+        this.lineWidth = options.lineWidth || 1;
     },
     /*
     *Function is called in every frame to redraw itself

@@ -8,14 +8,19 @@ RenderJs.Canvas.Shapes.Image = RenderJs.Canvas.Shape.extend({
     /*
     *Constructor
     */
-    init: function (url, x, y) {
+    init: function (options) {
         var self = this;
-        this._super(x, y, 0, 0);
+
+        var options = options || {};
+        this._super({ x: options.x, y: options.y });
         this.image = document.createElement("img");
-        this.image.src = url;
+        this.image.src = options.url;
+        this.loaded = false;
+        this.blurRadius = options.blurRadius || 0;
         this.image.onload = function () {
-            self.width(self.image.width);
-            self.height(self.image.height);
+            self.width = self.image.width;
+            self.height = self.image.height;
+            self.loaded = true;
         };
     },
     /*
@@ -23,7 +28,19 @@ RenderJs.Canvas.Shapes.Image = RenderJs.Canvas.Shape.extend({
     *-ctx is the drawing context from a canvas
     */
     draw: function (ctx) {
-        ctx.drawImage(this.image, this.x(), this.y());
-        this.invalid = false;
+        if (!this.loaded) return;
+        var filterdata = null;
+
+        for (var i = 0; i < this.filters.length; i++) {
+            switch (this.filters[i]) {
+                case RenderJs.Canvas.Filters.Blur:
+                    filterdata = RenderJs.Canvas.Filters.Blur(this.image, this.blurRadius);
+                    break;
+            }
+        }
+        if (filterdata)
+            ctx.putImageData(filterdata, this.x, this.y);
+        else
+            ctx.drawImage(this.image, this.x, this.y);
     }
 });

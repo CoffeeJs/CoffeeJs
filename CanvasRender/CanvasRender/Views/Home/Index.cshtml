@@ -10,22 +10,30 @@
         width: 1200,
         height: 800
     });
-    var layer = stage.createLayer();
+    var animlayer = stage.createLayer();
+    var staticlayer = stage.createLayer();
+    var darth = new RenderJs.Canvas.Shapes.Image({
+        url: "Images/darth-vader.jpg",
+        x: 100,
+        y: 100,
+        blurRadius: 30
+    });
+    darth.setfilters([RenderJs.Canvas.Filters.Blur]);
+    staticlayer.addShape(darth);
+    //for (var i = 0; i < 100; i++) {
+    //    var image = new RenderJs.Canvas.Shapes.Image("Images/test.png", (Math.random() * 1000) + 15, (Math.random() * 800) + 40, 100, 100);
+    //    animlayer.addShape(image);
+    //    image.direction = 1;
+    //    (function (img) {
+    //        anim = new RenderJs.Canvas.Animation(function (frame) {
+    //            //var v = Point(r * (Math.sin(Utils.convertToRad(img.aangle))) + ox, r * (Math.cos(Utils.convertToRad(img.aangle))) + oy);
+    //            if (img.x() < 0 || img.x() > 1200)
+    //                img.direction *= -1;
+    //            var x = img.direction * (1200 / (10000 / frame.frameRate));
+    //            img.moveShape(x, 0);
+    //        }, animlayer);
 
-    for (var i = 0; i < 1000; i++) {
-        var image = new RenderJs.Canvas.Shapes.Image("Images/test.png", (Math.random() * 1000) + 15, (Math.random() * 800) + 40, 100, 100);
-        layer.addShape(image);
-        image.direction = 1;
-        (function (img) {
-            anim = new RenderJs.Canvas.Animation(function (frame) {
-                //var v = Point(r * (Math.sin(Utils.convertToRad(img.aangle))) + ox, r * (Math.cos(Utils.convertToRad(img.aangle))) + oy);
-                if (img.x() < 0 || img.x() > 1200)
-                    img.direction *= -1;
-                var x = img.direction * (1200 / (10000 / frame));
-                img.moveShape(x, 0);
-            }, layer);
-
-            anim.start();
-        }(image));
-    }
+    //        anim.start();
+    //    }(image));
+    //}
 </script>

@@ -9,14 +9,15 @@ RenderJs.Canvas.Shapes.Arc = RenderJs.Canvas.Shape.extend({
     /*
     *Constructor
     */
-    init: function (x, y, radius, sAngle, eAngle, color, fillColor, lineWidth) {
-        this._super(x, y, radius * 2, radius * 2);
+    init: function (options) {
+        var options = options || {};
+        this._super(options.x, options.y, options.radius * 2, options.radius * 2);
 
-        this.sAngle = Utils.convertToRad(sAngle || 0);
-        this.eAngle = Utils.convertToRad(eAngle || 360);
-        this.color = color;
-        this.fillColor = fillColor;
-        this.lineWidth = lineWidth || 1;
+        this.sAngle = Utils.convertToRad(options.sAngle || 0);
+        this.eAngle = Utils.convertToRad(options.eAngle || 360);
+        this.color = options.color;
+        this.fillColor = options.fillColor;
+        this.lineWidth = options.lineWidth || 1;
     },
     /*
     *Overrides the original function, because the circle center point is not the top,left corner
@@ -37,20 +38,14 @@ RenderJs.Canvas.Shapes.Arc = RenderJs.Canvas.Shape.extend({
     *-ctx is the drawing context from a canvas
     *-fps is the frame per second
     */
-    draw: function (ctx, fps) {
-        ctx.save();
-        for (var i = 0; i < this._transformation.length; i++)
-            this._transformation[i].transform(ctx, fps);
+    draw: function (ctx) {
         ctx.lineWidth = this.lineWidth;
         ctx.strokeStyle = this.color;
         ctx.fillStyle = this.fillColor;
-        ctx.beginPath();
-        ctx.arc(this.x + this.width / 2, this.y + this.height / 2, this.width / 2, this.sAngle, this.eAngle);
+        ctx.arc(this.x() + this.width / 2, this.y + this.height / 2, this.width / 2, this.sAngle, this.eAngle);
         if (this.color)
             ctx.stroke();
         if (this.fillColor)
             ctx.fill();
-        ctx.closePath();
-        ctx.restore();
     }
 });
