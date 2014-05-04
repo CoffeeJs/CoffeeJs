@@ -10,9 +10,37 @@ RenderJs.Canvas.Layer = function (container, width, height) {
     var ctx = canvas.getContext("2d");
     var eventManager = new EventManager();
 
-    canvas.width = width;
-    canvas.height = height;
-    document.getElementById(container).appendChild(canvas);
+    var getMousePos = function (canvas, evt) {
+        var rect = canvas.getBoundingClientRect();
+        return {
+            x: evt.clientX - rect.left,
+            y: evt.clientY - rect.top
+        };
+    }
+
+    var init = function () {
+        canvas.width = width;
+        canvas.height = height;
+        document.getElementById(container).appendChild(canvas);
+    }
+
+    this.layerClick = function () {
+        for (var i = _shapes.length - 1; i >= 0; i--) {
+            if (_shapes[i].pointIntersect(getMousePos(event.target, event))) {
+                eventManager.trigger(RenderJs.Canvas.Events.click, [_shapes[i], event]);
+                _shapes[i].eventManager.trigger(RenderJs.Canvas.Events.click, event)
+                return true;
+            }
+        }
+    }
+
+    this.subscribeDomClick = function (handler) {
+        canvas.onclick = handler;
+    }
+
+    this.unsubscribeDomClick = function () {
+        canvas.onclick = null;
+    }
 
     this.onAnimate = function (handler) {
         eventManager.subscribe("animate", handler);
@@ -29,6 +57,7 @@ RenderJs.Canvas.Layer = function (container, width, height) {
             console.log("An object on the canvas should be inherited from CanvasObject!");
             return;
         }
+        shape.layer = this;
         _shapes.push(shape);
     }
 
@@ -60,5 +89,17 @@ RenderJs.Canvas.Layer = function (container, width, height) {
             _initialized = true;
     }
 
+    this.on = function (type, handler) {
+        if (!RenderJs.Canvas.Events[type])
+            return;
+        this.eventManager.subscribe(type, handler);
+    }
 
+    this.off = function (type, handler) {
+        if (!RenderJs.Canvas.Events[type])
+            return;
+        this.eventManager.unsubscribe(type, handler);
+    }
+
+    init();
 }

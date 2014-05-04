@@ -2,6 +2,8 @@
 RenderJs.Canvas = RenderJs.Canvas || {};
 RenderJs.Canvas.Shapes = RenderJs.Canvas.Shapes || {};
 
+RenderJs.Canvas.Events = { click: "click" };
+
 /*
 *Represents a base class for different type of shapes
 */
@@ -11,15 +13,18 @@ RenderJs.Canvas.Shape = Class.extend({
     */
     init: function (options) {
         options = options || {};
+        this.eventManager = new EventManager();
         this.x = options.x || 0;
         this.y = options.y || 0;
         this.width = options.width || 0;
         this.height = options.height || 0;
         this.angle = options.angle || 0;
-        this.scale = options.scale;
-        this.blur = options.blur;
+        this.scaleX = options.scaleX;
+        this.scaleY = options.scaleY;
+        this.blurRadius = options.blurRadius;
         this.filters = [];
         this.loaded = true;
+        this.layer = null;
     },
     /*
     *Returns with the center point of the shape
@@ -107,6 +112,9 @@ RenderJs.Canvas.Shape = Class.extend({
         }
     },
 
+    /*
+     * Filters which will be applied on the object(blur, greyscale etc...)
+     */
     setfilters: function (filters) {
         this.filters = filters;
     },
@@ -141,10 +149,20 @@ RenderJs.Canvas.Shape = Class.extend({
     *-height scale vertically ratio integer 1 is 100%
     *-t animation time
     */
-    scaleShape: function (width, height) {
+    scaleShape: function (scaleX, scaleY) {
         var o = self.getCenter();
         ctx.translate(o.x, o.y);
-        ctx.scale(width, height);
+        ctx.scale(scaleX, scaleY);
         ctx.translate(-o.x, -o.y);
+    },
+    on: function (type, handler) {
+        if (!RenderJs.Canvas.Events[type])
+            return;
+        this.eventManager.subscribe(type, handler);
+    },
+    off: function (type, handler) {
+        if (!RenderJs.Canvas.Events[type])
+            return;
+        this.eventManager.unsubscribe(type, handler);
     }
 });

@@ -18,6 +18,14 @@ RenderJs.Canvas.Stage = function (options) {
 
     var _render = new RenderJs.Canvas.Render(this);
 
+    var bubbleClick = function (index) {
+        if (index < 0) return;
+        var layer = _layers[index];
+        if (!layer.layerClick())
+            bubbleClick(--index);
+        return;
+    }
+
     var init = function () {
         document.getElementById(_container).style.width = self.width + "px";
         document.getElementById(_container).style.height = self.height + "px";
@@ -31,6 +39,15 @@ RenderJs.Canvas.Stage = function (options) {
 
     this.createLayer = function () {
         var layer = new RenderJs.Canvas.Layer(_container, this.width, this.height);
+
+        layer.subscribeDomClick(function () {
+            if (!layer.layerClick())
+                bubbleClick(_layers.length - 2);
+        });
+
+        for (var i = 0; i < _layers.length; i++) {
+            _layers[i].unsubscribeDomClick();
+        }
         _layers.push(layer);
 
         return layer;

@@ -9,7 +9,7 @@ RenderJs.Canvas.Animation = function (handler, layer) {
         handler({
             frameRate: frameRate,
             lastTime: time,
-            time: 1000 / frameRate
+            time: time + 1000 / frameRate
         });
         time += 1000 / frameRate;
     };
@@ -18,7 +18,16 @@ RenderJs.Canvas.Animation = function (handler, layer) {
         layer.onAnimate(animation);
     }
 
+    this.reset = function () {
+        time = 0;
+    }
+
+    this.pause = function () {
+        layer.offAnimate(animation);
+    }
+
     this.stop = function () {
+        this.reset();
         layer.offAnimate(animation);
     }
 }
