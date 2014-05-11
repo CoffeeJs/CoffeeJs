@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>
+        Canvas Render
+    </title>
+
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.css">
+    <link rel="stylesheet" type="text/css" href="css/home.css">
+
+    <script type="text/javascript" src="js/lib/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="js/lib/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/lib/StackBlur.js"></script>
+
+    <script type="text/javascript" src="js/modules/utility/class.js"></script>
+    <script type="text/javascript" src="js/modules/utility/EventManager.js"></script>
+    <script type="text/javascript" src="js/modules/utility/general.js"></script>
+    <script type="text/javascript" src="js/modules/utility/array.js"></script>
+    <script type="text/javascript" src="js/modules/utility/string.js"></script>
+    <script type="text/javascript" src="js/modules/utility/graphics.js"></script>
+    <script type="text/javascript" src="js/modules/stage.js"></script>
+    <script type="text/javascript" src="js/modules/layer.js"></script>
+    <script type="text/javascript" src="js/modules/render.js"></script>
+    <script type="text/javascript" src="js/modules/filters.js"></script>
+    <script type="text/javascript" src="js/modules/transition.js"></script>
+    <script type="text/javascript" src="js/modules/shapes/shape.js"></script>
+    <script type="text/javascript" src="js/modules/shapes/line.js"></script>
+    <script type="text/javascript" src="js/modules/shapes/image.js"></script>
+    <script type="text/javascript" src="js/modules/shapes/arc.js"></script>
+    <script type="text/javascript" src="js/modules/shapes/rectangle.js"></script>
+    <script type="text/javascript" src="js/modules/animation.js"></script>
+</head>
+<body>
+    <div id="viewport">
+    </div>
+    <script>
+        function transition(layer) {
+            var darth = new RenderJs.Canvas.Shapes.Image({
+                url: "images/darth-vader.jpg",
+                x: 100,
+                y: 100,
+                blurRadius: 0
+            });
+            darth.setfilters([RenderJs.Canvas.Filters.Blur]);
+            layer.addShape(darth);
+
+            var trans = new RenderJs.Canvas.Transition({
+                shape: darth,
+                duration: 2,
+                props: { x: 500 },
+                easing: RenderJs.Canvas.Easings.BounceEaseOut
+            });
+            trans.play();
+            setTimeout(function () {
+                trans.reverse();
+            }, 2000);
+        }
+
+        stage = new RenderJs.Canvas.Stage({
+            container: "viewport",
+            width: 1200,
+            height: 800
+        });
+        var animlayer = stage.createLayer();
+        var staticlayer = stage.createLayer();
+        transition(animlayer);
+    </script>
+    <script type="text/javascript" src="js/lib/underscore-min.js"></script>
+    <script type="text/javascript" src="js/lib/knockout-3.1.0.js"></script>
+
+    <script type="text/javascript" src="js/main.js"></script>
+
+</body>
+</html>
