@@ -215,6 +215,7 @@
     <Content Include="Scripts\Modules\UI\Render\Filters.js" />
     <Content Include="Scripts\Modules\UI\Render\Layer.js" />
     <Content Include="Scripts\Modules\UI\Render\Render.js" />
+    <Content Include="Scripts\Modules\UI\Render\Selector.js" />
     <Content Include="Scripts\Modules\UI\Render\Shapes\Arc.js" />
     <Content Include="Scripts\Modules\UI\Render\Shapes\Image.js" />
     <Content Include="Scripts\Modules\UI\Render\Shapes\Line.js" />
