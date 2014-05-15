@@ -73,8 +73,18 @@ RenderJs.Canvas.Layer = function (container, width, height) {
         return _shapes;
     }
 
+    this.hasSprites = function () {
+        for (var i = 0, length = _shapes.length; i < length; i++) {
+            if (_shapes[i] instanceof RenderJs.Canvas.Shapes.Sprite)
+                return true;
+        }
+        return false;
+    }
+
+    var time = 0;
+
     this.drawShapes = function (frame) {
-        if ((_initialized && !_animated) || _shapes.length == 0) return;
+        if ((_initialized && !_animated && !this.hasSprites()) || _shapes.length == 0) return;
 
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
@@ -83,10 +93,15 @@ RenderJs.Canvas.Layer = function (container, width, height) {
         for (var i = 0, length = _shapes.length; i < length; i++) {
             if (!_shapes[i].loaded)
                 shapesLoaded = false;
-            _shapes[i].draw(ctx);
+            _shapes[i].draw(ctx, {
+                frameRate: frame,
+                lastTime: time,
+                time: time + 1000 / frame
+            });
         }
         if (shapesLoaded)
             _initialized = true;
+        time += 1000 / frame;
     }
 
     this.on = function (type, handler) {

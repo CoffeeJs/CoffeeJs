@@ -29,6 +29,7 @@
     <script type="text/javascript" src="js/modules/shapes/image.js"></script>
     <script type="text/javascript" src="js/modules/shapes/arc.js"></script>
     <script type="text/javascript" src="js/modules/shapes/rectangle.js"></script>
+    <script type="text/javascript" src="js/modules/shapes/sprite.js"></script>
     <script type="text/javascript" src="js/modules/animation.js"></script>
 </head>
 <body>
@@ -57,6 +58,26 @@
             }, 2000);
         }
 
+        function sprite(layer) {
+            var test = new RenderJs.Canvas.Shapes.Sprite({
+                url: "images/blob-sprite.png",
+                x: 100,
+                y: 100,
+                defAnimation: "idle",
+                animations: {
+                    idle: [
+                        2, 2, 70, 119,
+                        71, 2, 74, 119,
+                        146, 2, 81, 119,
+                        226, 2, 76, 119
+                    ]
+                },
+                frameCount: 7
+            });
+            layer.addShape(test);
+            test.start();
+        }
+
         stage = new RenderJs.Canvas.Stage({
             container: "viewport",
             width: 1200,
@@ -64,7 +85,7 @@
         });
         var animlayer = stage.createLayer();
         var staticlayer = stage.createLayer();
-        transition(animlayer);
+        sprite(animlayer);
     </script>
     <script type="text/javascript" src="js/lib/underscore-min.js"></script>
     <script type="text/javascript" src="js/lib/knockout-3.1.0.js"></script>
