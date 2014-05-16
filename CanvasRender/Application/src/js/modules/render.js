@@ -15,9 +15,9 @@ RenderJs.Canvas.Render = function (stage) {
     }
 
     this.invalidate = function () {
-        var layers = _stage.getLayers();
-        for (var i = 0; i < layers.length; i++) {
-            layers[i].drawShapes(_FPS);
+        var enumerator = _stage.layers.getEnumerator();
+        while (enumerator.next() != undefined) {
+            enumerator.current().drawShapes(_FPS);
             //if (i == 0)
             //    self.refreshFps(layers[i].getContext());
             //for (var j = 0, l = layer.objects.length; j < l; j++) {

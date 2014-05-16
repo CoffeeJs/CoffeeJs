@@ -14,6 +14,7 @@
     <script type="text/javascript" src="js/lib/StackBlur.js"></script>
 
     <script type="text/javascript" src="js/modules/utility/class.js"></script>
+    <script type="text/javascript" src="js/modules/utility/linkedlist.js"></script>
     <script type="text/javascript" src="js/modules/utility/EventManager.js"></script>
     <script type="text/javascript" src="js/modules/utility/general.js"></script>
     <script type="text/javascript" src="js/modules/utility/array.js"></script>
@@ -44,6 +45,9 @@
                 blurRadius: 0
             });
             darth.setfilters([RenderJs.Canvas.Filters.Blur]);
+            darth.on("click", function () {
+                console.log("The force is with you!");
+            });
             layer.addShape(darth);
 
             var trans = new RenderJs.Canvas.Transition({
@@ -70,12 +74,20 @@
                         71, 2, 74, 119,
                         146, 2, 81, 119,
                         226, 2, 76, 119
+                    ],
+                    punch: [
+                        2, 138, 74, 122,
+                        76, 138, 84, 122,
+                        346, 138, 120, 122
                     ]
                 },
                 frameCount: 7
             });
             layer.addShape(test);
             test.start();
+            $(document).click(function () {
+                test.animation("punch");
+            });
         }
 
         stage = new RenderJs.Canvas.Stage({
@@ -85,7 +97,8 @@
         });
         var animlayer = stage.createLayer();
         var staticlayer = stage.createLayer();
-        sprite(animlayer);
+        transition(animlayer);
+        sprite(staticlayer);
     </script>
     <script type="text/javascript" src="js/lib/underscore-min.js"></script>
     <script type="text/javascript" src="js/lib/knockout-3.1.0.js"></script>

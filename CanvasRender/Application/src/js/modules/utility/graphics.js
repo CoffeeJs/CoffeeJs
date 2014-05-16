@@ -5,6 +5,14 @@
     };
     var fps = 0, now, lastUpdate = (new Date) * 1 - 1;
 
+    module.getMousePos = function (canvas, evt) {
+        var rect = canvas.getBoundingClientRect();
+        return {
+            x: evt.clientX - rect.left,
+            y: evt.clientY - rect.top
+        };
+    }
+
     module.getCanvas = function (w, h) {
         var c = document.createElement('canvas');
         c.width = w;

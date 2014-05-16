@@ -13,10 +13,12 @@
     // Create a new Class that inherits from this class
     BaseClass.extend = function (props) {
         var _super = this.prototype;
-        
+
         // Instantiate a base class (but only create the instance,
         // don't run the init constructor)
         var proto = Object.create(_super);
+
+        props = typeof props === "function" ? props() : props;
 
         // Copy the properties over onto the new prototype
         for (var name in props) {

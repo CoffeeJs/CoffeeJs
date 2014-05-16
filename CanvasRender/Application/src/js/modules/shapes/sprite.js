@@ -21,6 +21,7 @@ RenderJs.Canvas.Shapes.Sprite = RenderJs.Canvas.Shape.extend({
         this.frameIndex = 0;
         this.frameCount = options.frameCount;
         this.started = false;
+        this.loop = false;
         this.defAnimation = options.defAnimation;
         this.current = undefined;
         this.animations = options.animations;
@@ -34,11 +35,14 @@ RenderJs.Canvas.Shapes.Sprite = RenderJs.Canvas.Shape.extend({
     start: function () {
         this.animation(this.defAnimation, true);
     },
+    pointIntersect: function () { return false; },
     animation: function (name, loop) {
         this.frameIndex = 0;
         this.started = true;
+        this.loop = loop;
 
         if (!this.animations[name]) return;
+        this.previous = this.current;
         this.current = this.animations[name];
     },
     /*
@@ -60,8 +64,14 @@ RenderJs.Canvas.Shapes.Sprite = RenderJs.Canvas.Shape.extend({
         //    ctx.putImageData(this.filterCache, this.x, this.y);
         //else
         var aktFrame = this.frameIndex * 4;
+
+        var anim =
+
         ctx.drawImage(this.image, this.current[aktFrame], this.current[aktFrame + 1], this.current[aktFrame + 2], this.current[aktFrame + 3], this.x, this.y, this.current[aktFrame + 2], this.current[aktFrame + 3]);
-        if (frame.time / (1000 / frame.frameRate) % this.frameCount == 0)
+        if (frame.time / (1000 / frame.frameRate) % this.frameCount == 0) {
             this.frameIndex = (this.frameIndex * 4 + 4) > this.current.length - 1 ? 0 : this.frameIndex + 1;
+            if (this.frameIndex == 0 && !this.loop)
+                this.animation(this.defAnimation, true);
+        }
     }
 });

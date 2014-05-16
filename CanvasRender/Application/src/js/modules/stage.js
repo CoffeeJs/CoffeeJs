@@ -8,7 +8,6 @@ RenderJs.Canvas.Stage = function (options) {
      * Locals
      */
     var _container = options.container || "viewport";
-    var _layers = [];
 
     /*
      * Imaginary layer
@@ -20,7 +19,7 @@ RenderJs.Canvas.Stage = function (options) {
 
     var bubbleClick = function (index) {
         if (index < 0) return;
-        var layer = _layers[index];
+        var layer = this.layers[index];
         if (!layer.layerClick())
             bubbleClick(--index);
         return;
@@ -34,28 +33,28 @@ RenderJs.Canvas.Stage = function (options) {
         _render.render();
     }
 
+    this.layers = new LinkedList();
     this.width = options.width || 1200;
     this.height = options.height || 800;
 
     this.createLayer = function () {
         var layer = new RenderJs.Canvas.Layer(_container, this.width, this.height);
 
-        layer.subscribeDomClick(function () {
-            if (!layer.layerClick())
-                bubbleClick(_layers.length - 2);
-        });
+        //layer.subscribeDomClick(function () {
+        //    if (!layer.layerClick())
+        //        bubbleClick(_layers.length - 2);
+        //});
 
-        for (var i = 0; i < _layers.length; i++) {
-            _layers[i].unsubscribeDomClick();
-        }
-        _layers.push(layer);
+        //for (var i = 0; i < _layers.length; i++) {
+        //    _layers[i].unsubscribeDomClick();
+        //}
+        this.layers.append(layer);
 
         return layer;
     }
     this.getImagiaryCtx = function () {
         return ictx;
     }
-    this.getLayers = function () { return _layers }
 
     init();
 }
