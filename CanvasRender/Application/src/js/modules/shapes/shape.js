@@ -26,8 +26,8 @@ RenderJs.Canvas.Shape = Class.extend({
         this.selectable = options.selectable;
         this.draggable = options.draggable;
         this.filters = [];
-        this.loaded = true;
         this.layer = null;
+        this.loaded = true;
     },
     /*
     *Returns with the center point of the shape

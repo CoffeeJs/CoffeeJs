@@ -37,8 +37,8 @@ RenderJs.Canvas.Stage = function (options) {
     this.width = options.width || 1200;
     this.height = options.height || 800;
 
-    this.createLayer = function () {
-        var layer = new RenderJs.Canvas.Layer(_container, this.width, this.height);
+    this.createLayer = function (name) {
+        var layer = new RenderJs.Canvas.Layer(_container, this.width, this.height, name);
 
         //layer.subscribeDomClick(function () {
         //    if (!layer.layerClick())

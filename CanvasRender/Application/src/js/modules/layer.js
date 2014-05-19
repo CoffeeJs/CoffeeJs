@@ -9,7 +9,7 @@ RenderJs.Canvas.Layer = ListNode.extend({
     _layerClick: function (event) {
         for (var i = this.shapes.length - 1; i >= 0; i--) {
             if (this.shapes[i].pointIntersect(Utils.getMousePos(event.target, event))) {
-                this._eventManager.trigger(RenderJs.Canvas.Events.click, [this.shapes[i], event]);
+                //this._eventManager.trigger(RenderJs.Canvas.Events.click, [this.shapes[i], event]);
                 this.shapes[i].eventManager.trigger(RenderJs.Canvas.Events.click, event)
                 return true;
             }
@@ -17,19 +17,21 @@ RenderJs.Canvas.Layer = ListNode.extend({
         if (this.prev)
             this.prev.canvas.click();
     },
-    init: function (container, width, height) {
+    init: function (container, width, height, name) {
         var self = this;
+        this.name = name;
+        this.shapes = [];
+        this.canvas = document.createElement("canvas");
+        this.canvas.id = name;
+        document.getElementById(container).appendChild(this.canvas);
         this.ctx = this.canvas.getContext("2d");
         this.canvas.width = width;
         this.canvas.height = height;
-        document.getElementById(container).appendChild(this.canvas);
         this.canvas.addEventListener("click", function (event) {
             self._layerClick(event);
+            event.preventDefault();
         });
     },
-    canvas: document.createElement("canvas"),
-    ctx: null,
-    shapes: [],
     on: function (type, handler) {
         if (!RenderJs.Canvas.Events[type])
             return;
