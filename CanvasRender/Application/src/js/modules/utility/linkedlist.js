@@ -24,8 +24,8 @@
         var last = this.last();
 
         if (nodes.length > 0) {
-            //last.next = node;
-            //node.prev = last;
+            last.next = node;
+            node.prev = last;
         }
         nodes.push(node);
     }

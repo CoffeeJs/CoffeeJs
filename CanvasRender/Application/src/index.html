@@ -42,7 +42,8 @@
                 url: "images/darth-vader.jpg",
                 x: 100,
                 y: 100,
-                blurRadius: 0
+                blurRadius: 0,
+                canCollide: true
             });
             //darth.setfilters([RenderJs.Canvas.Filters.Blur]);
             darth.on("click", function () {
@@ -60,6 +61,12 @@
             setTimeout(function () {
                 trans.reverse();
             }, 2000);
+            $(layer.canvas).mousemove(function (evt) {
+                var pos = Utils.getMousePos(layer.canvas, evt);
+
+                darth.x = pos.x;
+                darth.y = pos.y;
+            })
         }
 
         function sprite(llayer) {
@@ -67,6 +74,7 @@
                 url: "images/blob-sprite.png",
                 x: 100,
                 y: 100,
+                canCollide: true,
                 defAnimation: "idle",
                 animations: {
                     idle: [
@@ -96,9 +104,9 @@
             height: 800
         });
         var animlayer = stage.createLayer("AnimLayer");
-        var staticlayer = stage.createLayer("StaticLayer");
+        //var staticlayer = stage.createLayer("StaticLayer");
         transition(animlayer);
-        sprite(staticlayer);
+        //sprite(staticlayer);
     </script>
     <script type="text/javascript" src="js/lib/underscore-min.js"></script>
     <script type="text/javascript" src="js/lib/knockout-3.1.0.js"></script>

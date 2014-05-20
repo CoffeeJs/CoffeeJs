@@ -25,6 +25,7 @@ RenderJs.Canvas.Shape = Class.extend({
         this.selected = options.selected || false;
         this.selectable = options.selectable;
         this.draggable = options.draggable;
+        this.canCollide = options.canCollide;
         this.filters = [];
         this.layer = null;
         this.loaded = true;

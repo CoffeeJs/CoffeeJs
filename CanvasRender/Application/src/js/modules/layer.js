@@ -6,16 +6,17 @@ RenderJs.Canvas.Layer = ListNode.extend({
     _animated: false,
     _eventManager: new EventManager(),
     _time: 0,
-    _layerClick: function (event) {
+    _layerClick: function (event, position) {
+        var position = position || Utils.getMousePos(event.target, event);
         for (var i = this.shapes.length - 1; i >= 0; i--) {
-            if (this.shapes[i].pointIntersect(Utils.getMousePos(event.target, event))) {
-                //this._eventManager.trigger(RenderJs.Canvas.Events.click, [this.shapes[i], event]);
+            if (this.shapes[i].pointIntersect(position)) {
+                this._eventManager.trigger(RenderJs.Canvas.Events.click, [this.shapes[i], event]);
                 this.shapes[i].eventManager.trigger(RenderJs.Canvas.Events.click, event)
                 return true;
             }
         }
         if (this.prev)
-            this.prev.canvas.click();
+            $(this.prev.canvas).trigger("click", position);
     },
     init: function (container, width, height, name) {
         var self = this;
@@ -27,8 +28,8 @@ RenderJs.Canvas.Layer = ListNode.extend({
         this.ctx = this.canvas.getContext("2d");
         this.canvas.width = width;
         this.canvas.height = height;
-        this.canvas.addEventListener("click", function (event) {
-            self._layerClick(event);
+        $(this.canvas).on("click", function (event, position) {
+            self._layerClick(event, position);
             event.preventDefault();
         });
     },
@@ -80,6 +81,14 @@ RenderJs.Canvas.Layer = ListNode.extend({
                 lastTime: this._time,
                 time: this._time + 1000 / frame
             });
+            //
+            //Collision detection
+            if (this.shapes[i].canCollide) {
+                for (var j = 0, jl = this.shapes.length; j < jl; j++) {
+                    if (this.shapes[j].canCollide && i != j)
+                        var collision = this.shapes[j].pixelCollision(this.shapes[k], Utils.getCanvas(0, 0).getContext("2d"));
+                }
+            }
         }
         if (shapesLoaded)
             this._initialized = true;
