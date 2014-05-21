@@ -9,12 +9,6 @@ RenderJs.Canvas.Stage = function (options) {
      */
     var _container = options.container || "viewport";
 
-    /*
-     * Imaginary layer
-     */
-    var _icanvas = document.createElement("canvas");
-    var _ictx = _icanvas.getContext("2d");
-
     var _render = new RenderJs.Canvas.Render(this);
 
     var bubbleClick = function (index) {
@@ -28,8 +22,7 @@ RenderJs.Canvas.Stage = function (options) {
     var init = function () {
         document.getElementById(_container).style.width = self.width + "px";
         document.getElementById(_container).style.height = self.height + "px";
-        _icanvas.width = this.width;
-        _icanvas.height = this.height;
+        
         _render.render();
     }
 
@@ -52,9 +45,6 @@ RenderJs.Canvas.Stage = function (options) {
 
         return layer;
     }
-    this.getImagiaryCtx = function () {
-        return ictx;
-    }
-
+   
     init();
 }

@@ -40,15 +40,12 @@
         function transition(layer) {
             var darth = new RenderJs.Canvas.Shapes.Image({
                 url: "images/darth-vader.jpg",
-                x: 100,
+                x: 0,
                 y: 100,
                 blurRadius: 0,
-                canCollide: true
+                collision: true
             });
             //darth.setfilters([RenderJs.Canvas.Filters.Blur]);
-            darth.on("click", function () {
-                console.log("The force is with you!");
-            });
             layer.addShape(darth);
             var trans = new RenderJs.Canvas.Transition({
                 shape: darth,
@@ -58,15 +55,34 @@
                 easing: RenderJs.Canvas.Easings.BounceEaseOut
             });
             trans.play();
-            setTimeout(function () {
-                trans.reverse();
-            }, 2000);
-            $(layer.canvas).mousemove(function (evt) {
-                var pos = Utils.getMousePos(layer.canvas, evt);
+            darth.on("collision", function (obj) {
+                //trans.stop();
+            });
+            layer.on("mouseenter", function (evt, position) {
+                darth.x = position.x;
+                darth.y = position.y;
+            });
+        }
 
-                darth.x = pos.x;
-                darth.y = pos.y;
-            })
+        function transition1(layer) {
+            var darth = new RenderJs.Canvas.Shapes.Image({
+                url: "images/darth-vader.jpg",
+                x: 1000,
+                y: 100,
+                collision: true
+            });
+            darth.on("collision", function (obj) {
+                trans.stop();
+            });
+            layer.addShape(darth);
+            var trans = new RenderJs.Canvas.Transition({
+                shape: darth,
+                layer: layer,
+                duration: 2,
+                props: { x: -800 },
+                easing: RenderJs.Canvas.Easings.BounceEaseOut
+            });
+            trans.play();
         }
 
         function sprite(llayer) {
@@ -74,7 +90,7 @@
                 url: "images/blob-sprite.png",
                 x: 100,
                 y: 100,
-                canCollide: true,
+                collision: true,
                 defAnimation: "idle",
                 animations: {
                     idle: [
@@ -104,8 +120,9 @@
             height: 800
         });
         var animlayer = stage.createLayer("AnimLayer");
-        //var staticlayer = stage.createLayer("StaticLayer");
+        var staticlayer = stage.createLayer("StaticLayer");
         transition(animlayer);
+        transition1(animlayer);
         //sprite(staticlayer);
     </script>
     <script type="text/javascript" src="js/lib/underscore-min.js"></script>

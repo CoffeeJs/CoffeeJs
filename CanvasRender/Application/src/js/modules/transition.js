@@ -152,6 +152,14 @@ RenderJs.Canvas.Transition = function (options) {
         animation.start();
     }
 
+    this.pause = function () {
+        animation.pause();
+    }
+
+    this.stop = function () {
+        animation.stop();
+    }
+
     this.reverse = function () {
         reverse = true;
         animation.start();

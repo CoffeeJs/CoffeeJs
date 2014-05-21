@@ -15,17 +15,28 @@ var EventManager;
             handlers = listeners[type] = [];
         }
         scope = (scope ? scope : window);
+        var id = Utils.getGuid();
         handlers.push({
+            id: id,
             method: method,
             scope: scope,
             context: (context ? context : scope)
         });
+        return id;
     },
-    unsubscribe: function (type, handler) {
-        this.listeners[type].splice(this.listeners[type].indexOf(handler), 1);
+    unsubscribe: function (type, id) {
+        var i = this.listeners[type].length;
+        var handler = null;
+        while (!handler && i--) {
+            if(this.listeners[type][i].id === id)
+                handler = this.listeners[type][i];
+        }
+        if (!handler) return;
+        this.listeners[type].splice(i, 1);
     },
     trigger: function (type, data, context) {
         var listeners, handlers, i, n, handler, scope;
+        data = data instanceof Array ? data : [data];
         if (!(listeners = this.listeners)) {
             return;
         }
@@ -34,9 +45,9 @@ var EventManager;
         }
         for (i = 0, n = handlers.length; i < n; i++) {
             handler = handlers[i];
-            if (typeof (context) !== "undefined" && context !== handler.context) continue;
-            if (handler.method.call(
-                handler.scope, data, type
+            if ((typeof (context) !== "undefined" && context !== handler.context) || !handler) continue;
+            if (handler.method.apply(
+                handler.scope, data
             ) === false) {
                 return false;
             }

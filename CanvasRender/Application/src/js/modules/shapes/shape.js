@@ -2,7 +2,7 @@
 RenderJs.Canvas = RenderJs.Canvas || {};
 RenderJs.Canvas.Shapes = RenderJs.Canvas.Shapes || {};
 
-RenderJs.Canvas.Events = { click: "click" };
+RenderJs.Canvas.Events = { click: "click", mousemove: "mousemove", mousehover: "mousehover", mouseleave: "mouseleave", collision: "collision" };
 
 /*
 *Represents a base class for different type of shapes
@@ -13,7 +13,7 @@ RenderJs.Canvas.Shape = Class.extend({
     */
     init: function (options) {
         options = options || {};
-        this.eventManager = new EventManager();
+        this._eventManager = new EventManager();
         this.x = options.x || 0;
         this.y = options.y || 0;
         this.width = options.width || 0;
@@ -25,7 +25,7 @@ RenderJs.Canvas.Shape = Class.extend({
         this.selected = options.selected || false;
         this.selectable = options.selectable;
         this.draggable = options.draggable;
-        this.canCollide = options.canCollide;
+        this.collision = options.collision || false;
         this.filters = [];
         this.layer = null;
         this.loaded = true;
@@ -92,7 +92,7 @@ RenderJs.Canvas.Shape = Class.extend({
             X: ar.right() < br.right() ? ar.right() : br.right(),
             Y: ar.bottom() < br.bottom() ? ar.bottom() : br.bottom(),
         }
-        cr = Rect(cp.x, cp.y, cp.X - cp.x, cp.Y - cp.y);
+        cr = RenderJs.Rect(cp.x, cp.y, cp.X - cp.x, cp.Y - cp.y);
         if (cr.width <= 0 || cr.height <= 0)
             return false;
         //
@@ -162,11 +162,11 @@ RenderJs.Canvas.Shape = Class.extend({
     on: function (type, handler) {
         if (!RenderJs.Canvas.Events[type])
             return;
-        this.eventManager.subscribe(type, handler);
+        this._eventManager.subscribe(type, handler);
     },
     off: function (type, handler) {
         if (!RenderJs.Canvas.Events[type])
             return;
-        this.eventManager.unsubscribe(type, handler);
+        this._eventManager.unsubscribe(type, handler);
     }
 });

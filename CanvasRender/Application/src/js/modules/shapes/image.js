@@ -12,7 +12,7 @@ RenderJs.Canvas.Shapes.Image = RenderJs.Canvas.Shape.extend({
         var self = this;
 
         var options = options || {};
-        this._super({ x: options.x, y: options.y });
+        this._super(options);
         this.image = document.createElement("img");
         this.image.src = options.url;
         this.loaded = false;
