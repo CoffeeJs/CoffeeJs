@@ -66,7 +66,7 @@ RenderJs.Canvas.Layer = ListNode.extend({
     //Constructor
     init: function (container, width, height, active) {
         var self = this;
-        this._imaginaryCtx = $("#icanvas")[0].getContext("2d");
+        this._imaginaryCtx = Utils.getCanvas(width, height).getContext("2d");
         this.active = active || false;
         this.shapes = [];
         this.canvas = document.createElement("canvas");
