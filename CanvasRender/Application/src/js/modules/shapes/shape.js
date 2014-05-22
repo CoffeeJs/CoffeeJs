@@ -2,7 +2,7 @@
 RenderJs.Canvas = RenderJs.Canvas || {};
 RenderJs.Canvas.Shapes = RenderJs.Canvas.Shapes || {};
 
-RenderJs.Canvas.Events = { click: "click", mousemove: "mousemove", mousehover: "mousehover", mouseleave: "mouseleave", collision: "collision" };
+RenderJs.Canvas.Events = { animate: "animate", click: "click", mousemove: "mousemove", mousehover: "mousehover", mouseleave: "mouseleave", collision: "collision" };
 
 /*
 *Represents a base class for different type of shapes
@@ -97,18 +97,20 @@ RenderJs.Canvas.Shape = Class.extend({
             return false;
         //
         //Draw intersection part of this shape
-        ictx.clearRect(cr.x, cr.y, cr.width, cr.height);
+        //ictx.clearRect(cr.x, cr.y, cr.width, cr.height);
+        ictx.clearRect(0, 0, 1200, 800);
         this.draw(ictx);
         var ia = ictx.getImageData(cr.x, cr.y, cr.width, cr.height);
         //
         //Draw intersection part of obj
-        ictx.clearRect(cr.x, cr.y, cr.width, cr.height);
+        //ictx.clearRect(cr.x, cr.y, cr.width, cr.height);
+        ictx.clearRect(0, 0, 1200, 800);
         obj.draw(ictx);
         var ib = ictx.getImageData(cr.x, cr.y, cr.width, cr.height);
-        var resolution = 4 * 10;
+        var resolution = 4 * 5;
         var l = ia.data.length;
         for (var i = 0; i < l; i += resolution) {
-            if (!ia.data[i + 3] || !ib.data[i + 3])
+            if (ia.data[i + 3] < 100 || ib.data[i + 3] < 100)
                 continue;
             //Collision
             return true;

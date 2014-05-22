@@ -11,7 +11,8 @@ RenderJs.Canvas.Shapes.Arc = RenderJs.Canvas.Shape.extend({
     */
     init: function (options) {
         var options = options || {};
-        this._super(options.x, options.y, options.radius * 2, options.radius * 2);
+        options.width = options.height = options.radius * 2, options.radius * 2;
+        this._super(options);
 
         this.sAngle = Utils.convertToRad(options.sAngle || 0);
         this.eAngle = Utils.convertToRad(options.eAngle || 360);
@@ -39,13 +40,15 @@ RenderJs.Canvas.Shapes.Arc = RenderJs.Canvas.Shape.extend({
     *-fps is the frame per second
     */
     draw: function (ctx) {
+        ctx.beginPath();
         ctx.lineWidth = this.lineWidth;
         ctx.strokeStyle = this.color;
         ctx.fillStyle = this.fillColor;
-        ctx.arc(this.x() + this.width / 2, this.y + this.height / 2, this.width / 2, this.sAngle, this.eAngle);
+        ctx.arc(this.x + this.width / 2, this.y + this.height / 2, this.width / 2, this.sAngle, this.eAngle);
         if (this.color)
             ctx.stroke();
         if (this.fillColor)
             ctx.fill();
+        ctx.closePath();
     }
 });

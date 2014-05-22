@@ -3,7 +3,7 @@
     module.convertToRad = function (deg) {
         return deg * (Math.PI / 180);
     };
-    var fps = 0, now, lastUpdate = (new Date) * 1 - 1;
+    var lastUpdate = (new Date) * 1 - 1;
 
     module.getMousePos = function (canvas, evt) {
         var rect = canvas.getBoundingClientRect();
@@ -34,9 +34,10 @@
         return ctx.getImageData(0, 0, c.width, c.height);
     }
 
-    module.getFps = function (refFps) {
-        var thisFrameFPS = 1000 / ((now = new Date) - lastUpdate);
-        fps += (thisFrameFPS - fps) / refFps;
+    module.getFps = function () {
+        var now = new Date;
+        var fps = 1000 / (now - lastUpdate);
+        //fps += (thisFrameFPS - fps) / refFps;
         lastUpdate = now;
 
         return fps;

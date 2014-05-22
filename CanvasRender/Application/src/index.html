@@ -12,6 +12,7 @@
     <script type="text/javascript" src="js/lib/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="js/lib/bootstrap.min.js"></script>
     <script type="text/javascript" src="js/lib/StackBlur.js"></script>
+    <script type="text/javascript" src="js/lib/Stats.js"></script>
 
     <script type="text/javascript" src="js/modules/utility/class.js"></script>
     <script type="text/javascript" src="js/modules/utility/linkedlist.js"></script>
@@ -36,53 +37,77 @@
 <body>
     <div id="viewport">
     </div>
+    <div>
+        <canvas style="border:1px solid #333" width="1200" height="800" id="icanvas"></canvas>
+    </div>
     <script>
         function transition(layer) {
-            var darth = new RenderJs.Canvas.Shapes.Image({
-                url: "images/darth-vader.jpg",
+            var m1 = 100;
+            var m2 = 50;
+            var v1 = { x: 10 * 37.795275591, y: 0 };
+            var v2 = { x: 10 * 37.795275591 * -1, y: 0 };
+            var circle1 = new RenderJs.Canvas.Shapes.Arc({
                 x: 0,
-                y: 100,
-                blurRadius: 0,
+                y: 50,
+                radius: 250,
+                sAngle: 0,
+                eAngle: 360,
+                fillColor: "#333",
                 collision: true
             });
-            //darth.setfilters([RenderJs.Canvas.Filters.Blur]);
-            layer.addShape(darth);
-            var trans = new RenderJs.Canvas.Transition({
-                shape: darth,
-                layer: layer,
-                duration: 2,
-                props: { x: 500 },
-                easing: RenderJs.Canvas.Easings.BounceEaseOut
+            circle1.v = v1;
+            var circle2 = new RenderJs.Canvas.Shapes.Arc({
+                x: 1150,
+                y: 275,
+                radius: 25,
+                sAngle: 0,
+                eAngle: 360,
+                fillColor: "green",
+                collision: true
             });
-            trans.play();
-            darth.on("collision", function (obj) {
-                //trans.stop();
-            });
-            layer.on("mouseenter", function (evt, position) {
-                darth.x = position.x;
-                darth.y = position.y;
-            });
-        }
+            circle2.v = v2;
+            layer.addShape(circle1);
+            layer.addShape(circle2);
+            circle1.on("collision", function () {
+                var n = { x: circle2.getCenter().x - circle1.getCenter().x, y: circle2.getCenter().y - circle1.getCenter().y };
+                var un = { x: n.x / Math.sqrt(Math.pow(n.x, 2) + Math.pow(n.y, 2)), y: n.y / Math.sqrt(Math.pow(n.x, 2) + Math.pow(n.y, 2)) };
+                var ut = { x: -un.y, y: un.x };
+                var v1n = un.x * v1.x + un.y * v1.y;
+                var v2n = un.x * v2.x + un.y * v2.y;
+                var v1t = ut.x * v1.x + ut.y * v1.y;
+                var v2t = ut.x * v2.x + ut.y * v2.y;
 
-        function transition1(layer) {
-            var darth = new RenderJs.Canvas.Shapes.Image({
-                url: "images/darth-vader.jpg",
-                x: 1000,
-                y: 100,
-                collision: true
+                var v11n = ((m1 - m2) * v1n + (2 * m2 * v2n)) / (m1 + m2);
+                var vv1n = { x: (un.x * v11n), y: un.y * v11n };
+                var vv1t = { x: (ut.x * v1t), y: ut.y * v1t };
+                circle1.v = { x: vv1n.x + vv1t.x, y: vv1n.y + vv1t.y }
             });
-            darth.on("collision", function (obj) {
-                trans.stop();
+            circle2.on("collision", function () {
+                var n = { x: circle2.getCenter().x - circle1.getCenter().x, y: circle2.getCenter().y - circle1.getCenter().y };
+                var un = { x: n.x / Math.sqrt(Math.pow(n.x, 2) + Math.pow(n.y, 2)), y: n.y / Math.sqrt(Math.pow(n.x, 2) + Math.pow(n.y, 2)) };
+                var ut = { x: -un.y, y: un.x };
+                var v1n = un.x * v1.x + un.y * v1.y;
+                var v2n = un.x * v2.x + un.y * v2.y;
+                var v1t = ut.x * v1.x + ut.y * v1.y;
+                var v2t = ut.x * v2.x + ut.y * v2.y;
+
+                var v22n = ((m2 - m1) * v2n + (2 * m1 * v1n)) / (m1 + m2);
+                var vv2n = { x: (un.x * v22n), y: un.y * v22n };
+                var vv2t = { x: (ut.x * v2t), y: ut.y * v2t };
+                circle2.v = { x: vv2n.x + vv2t.x, y: vv2n.y + vv2t.y }
+
             });
-            layer.addShape(darth);
-            var trans = new RenderJs.Canvas.Transition({
-                shape: darth,
-                layer: layer,
-                duration: 2,
-                props: { x: -800 },
-                easing: RenderJs.Canvas.Easings.BounceEaseOut
-            });
-            trans.play();
+            var anim = new RenderJs.Canvas.Animation(function (frame) {
+                //Gravity ((9.78049 / 2) * Math.pow(frame.time / 1000, 2)) * 2;
+
+                //r * (Math.sin(Utils.convertToRad(img.aangle))) + ox, r * (Math.cos(Utils.convertToRad(img.aangle))) + oy)
+
+                circle1.x += circle1.v.x * ((frame.time - frame.lastTime) / 1000);
+                circle1.y += circle1.v.y * ((frame.time - frame.lastTime) / 1000);
+                circle2.x += circle2.v.x * ((frame.time - frame.lastTime) / 1000);
+                circle2.y += circle2.v.y * ((frame.time - frame.lastTime) / 1000);
+            }, layer);
+            anim.start();
         }
 
         function sprite(llayer) {
@@ -122,7 +147,6 @@
         var animlayer = stage.createLayer("AnimLayer");
         var staticlayer = stage.createLayer("StaticLayer");
         transition(animlayer);
-        transition1(animlayer);
         //sprite(staticlayer);
     </script>
     <script type="text/javascript" src="js/lib/underscore-min.js"></script>
