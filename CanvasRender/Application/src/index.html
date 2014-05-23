@@ -39,23 +39,29 @@
     </div>
     <script>
         function transition(layer) {
-            var m1 = 100;
-            var m2 = 50;
-            var v1 = new RenderJs.Vector(10 * 37.795275591, 0);
-            var v2 = new RenderJs.Vector(10 * 37.795275591 * -1, 0);
+            //
+            //In kg
+            var m1 = 2;
+            var m2 = 0.5;
+            //
+            //In pixel/s
+            var v1 = new RenderJs.Vector(377.95275591, 0);
+            var v2 = new RenderJs.Vector(-377.795275591, 0);
             var circle1 = new RenderJs.Canvas.Shapes.Arc({
                 x: 0,
-                y: 50,
-                radius: 200,
+                y: 280,
+                radius: 100,
                 sAngle: 0,
                 eAngle: 360,
                 fillColor: "#333",
                 collision: true
             });
             circle1.v = v1;
+            circle1.pos = new RenderJs.Vector(0, 280);
+            circle1.prevPos = new RenderJs.Vector(0, 280);
             var circle2 = new RenderJs.Canvas.Shapes.Arc({
                 x: 1150,
-                y: 150,
+                y: 250,
                 radius: 25,
                 sAngle: 0,
                 eAngle: 360,
@@ -63,45 +69,70 @@
                 collision: true
             });
             circle2.v = v2;
+            circle1.w1 = 0;
+            circle2.w2 = 0;
             layer.addShape(circle1);
             layer.addShape(circle2);
             circle1.on("collision", function () {
+                //
+                //Perfectly unelastic movement
                 var n = new RenderJs.Vector(circle2.getCenter().x - circle1.getCenter().x, circle2.getCenter().y - circle1.getCenter().y);
                 var un = new RenderJs.Vector(n.x / Math.sqrt(Math.pow(n.x, 2) + Math.pow(n.y, 2)), n.y / Math.sqrt(Math.pow(n.x, 2) + Math.pow(n.y, 2)));
                 var ut = new RenderJs.Vector(-un.y, un.x);
-                var v1n = un.dotScalar(v1);
-                var v2n = un.dotScalar(v2);
-                var v1t = ut.dotScalar(v1);
-                var v2t = ut.dotScalar(v2);
+                var v1n = un.dot(v1);
+                var v2n = un.dot(v2);
+                var v1t = ut.dot(v1);
+                var v2t = ut.dot(v2);
 
                 var v11n = ((m1 - m2) * v1n + (2 * m2 * v2n)) / (m1 + m2);
-                var vv1n = un.dotVector(v11n);
-                var vv1t = ut.dotVector(v1t);
-                circle1.v = vv1n.sum(vv1t);
+                var vv1n = un.scale(v11n);
+                var vv1t = ut.scale(v1t);
+                circle1.v = vv1n.add(vv1t);
+
+                //
+                //Angular velocity
+                var r = Math.abs(circle1.getCenter().y - circle2.getCenter().y);
+                var l = (m1 + (m2 / 3)) * Math.pow(circle1.radius, 2);
+                circle1.w1 = (m1 * v1.length() * circle1.radius) / l;
+                console.log("Angular velocity 1:", circle1.w1);
+                //console.log("Angular velocity 2:", w2);
+
+
             });
             circle2.on("collision", function () {
                 var n = new RenderJs.Vector(circle2.getCenter().x - circle1.getCenter().x, circle2.getCenter().y - circle1.getCenter().y);
                 var un = new RenderJs.Vector(n.x / Math.sqrt(Math.pow(n.x, 2) + Math.pow(n.y, 2)), n.y / Math.sqrt(Math.pow(n.x, 2) + Math.pow(n.y, 2)));
                 var ut = new RenderJs.Vector(-un.y, un.x);
-                var v1n = un.dotScalar(v1);
-                var v2n = un.dotScalar(v2);
-                var v1t = ut.dotScalar(v1);
-                var v2t = ut.dotScalar(v2);
+                var v1n = un.dot(v1);
+                var v2n = un.dot(v2);
+                var v1t = ut.dot(v1);
+                var v2t = ut.dot(v2);
 
                 var v22n = ((m2 - m1) * v2n + (2 * m1 * v1n)) / (m1 + m2);
-                var vv2n = un.dotVector(v22n);
-                var vv2t = ut.dotVector(v2t);
-                circle2.v = vv2n.sum(vv2t);
+                var vv2n = un.scale(v22n);
+                var vv2t = ut.scale(v2t);
+                circle2.v = vv2n.add(vv2t);
+
+                var r = Math.abs(circle1.getCenter().y - circle2.getCenter().y);
+                var l = (m1 + (m2 / 3)) * Math.pow(circle2.radius, 2);
+                circle2.w2 = (m1 * v2.length() * circle2.radius) / l;
+                console.log("Angular velocity 2:", circle2.w2);
             });
             var anim = new RenderJs.Canvas.Animation(function (frame) {
-                //Gravity ((9.78049 / 2) * Math.pow(frame.time / 1000, 2)) * 2;
+                //Gravity ((9.78049 / 2) * Math.pow(frame.time / 1000, 2));
 
                 //r * (Math.sin(Utils.convertToRad(img.aangle))) + ox, r * (Math.cos(Utils.convertToRad(img.aangle))) + oy)
-
+                var acc = new RenderJs.Vector(0, 0.1);
+                var newPos = circle1.pos.scale(2).sub(circle1.prevPos).add(acc);
+                //circle1.prevPos.set(circle1.pos);
+                //circle1.pos.set(newPos);
                 circle1.x += circle1.v.x * ((frame.time - frame.lastTime) / 1000);
                 circle1.y += circle1.v.y * ((frame.time - frame.lastTime) / 1000);
+
                 circle2.x += circle2.v.x * ((frame.time - frame.lastTime) / 1000);
                 circle2.y += circle2.v.y * ((frame.time - frame.lastTime) / 1000);
+                circle1.angle += (circle1.w1 / (Math.PI / 180)) * ((frame.time - frame.lastTime) / 1000);
+                circle2.angle += (circle2.w2 / (Math.PI / 180)) * ((frame.time - frame.lastTime) / 1000);
             }, layer);
             anim.start();
         }

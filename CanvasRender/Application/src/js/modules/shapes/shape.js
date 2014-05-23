@@ -141,9 +141,9 @@ RenderJs.Canvas.Shape = Class.extend({
     *-deg rotation angle
     *-t animation time
     */
-    rotateShape: function (deg) {
-        this.angle += deg;
-        var o = self.getCenter();
+    rotateShape: function (ctx) {
+        if (this.angle == 0) return;
+        var o = this.getCenter();
         ctx.translate(o.x, o.y);
         ctx.rotate(Utils.convertToRad(this.angle));
         ctx.translate(-o.x, -o.y);

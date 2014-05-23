@@ -14,6 +14,7 @@ RenderJs.Canvas.Shapes.Arc = RenderJs.Canvas.Shape.extend({
         options.width = options.height = options.radius * 2, options.radius * 2;
         this._super(options);
 
+        this.radius = options.radius;
         this.sAngle = Utils.convertToRad(options.sAngle || 0);
         this.eAngle = Utils.convertToRad(options.eAngle || 360);
         this.color = options.color;
@@ -40,6 +41,10 @@ RenderJs.Canvas.Shapes.Arc = RenderJs.Canvas.Shape.extend({
     *-fps is the frame per second
     */
     draw: function (ctx) {
+        if (this.angle != 0) {
+            ctx.save();
+            this.rotateShape(ctx);
+        }
         ctx.beginPath();
         ctx.lineWidth = this.lineWidth;
         ctx.strokeStyle = this.color;
@@ -49,6 +54,13 @@ RenderJs.Canvas.Shapes.Arc = RenderJs.Canvas.Shape.extend({
             ctx.stroke();
         if (this.fillColor)
             ctx.fill();
+
+        ctx.fillStyle = "white";
+        ctx.font = "bold 10pt Verdana";
+        ctx.fillText("Wheel", this.x + this.radius - 20, this.y + this.radius);
         ctx.closePath();
+        if (this.angle != 0) {
+            ctx.restore();
+        }
     }
 });
