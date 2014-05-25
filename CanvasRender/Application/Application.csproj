@@ -61,6 +61,7 @@
     <Content Include="src\js\main.js" />
     <Content Include="src\js\modules\animation.js" />
     <Content Include="src\js\modules\filters.js" />
+    <Content Include="src\js\modules\game\platform.js" />
     <Content Include="src\js\modules\layer.js" />
     <Content Include="src\js\modules\render.js" />
     <Content Include="src\js\modules\selector.js" />
@@ -89,6 +90,7 @@
     <None Include="src\fonts\glyphicons-halflings-regular.woff" />
     <None Include="src\js\lib\underscore-min.map" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

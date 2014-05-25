@@ -14,8 +14,8 @@ RenderJs.Canvas.Shape = Class.extend({
     init: function (options) {
         options = options || {};
         this._eventManager = new EventManager();
-        this.x = options.x || 0;
-        this.y = options.y || 0;
+        this.pos = new RenderJs.Vector(options.x, options.y);
+
         this.width = options.width || 0;
         this.height = options.height || 0;
         this.angle = options.angle || 0;
@@ -34,13 +34,13 @@ RenderJs.Canvas.Shape = Class.extend({
     *Returns with the center point of the shape
     */
     getCenter: function () {
-        return RenderJs.Point(this.x + (this.width) / 2, this.y + (this.height) / 2);
+        return RenderJs.Point(this.pos.x + (this.width) / 2, this.pos.y + (this.height) / 2);
     },
     /*
     *Returns with the rect around the shape
     */
     getRect: function () {
-        return RenderJs.Rect(this.x, this.y, this.width, this.height);
+        return RenderJs.Rect(this.pos.x, this.pos.y, this.width, this.height);
     },
     /*
     *Check if the shape is intersect the given rect
@@ -54,8 +54,8 @@ RenderJs.Canvas.Shape = Class.extend({
         if (rw <= 0 || rh <= 0 || tw <= 0 || th <= 0) {
             return false;
         }
-        var tx = this.x;
-        var ty = this.y;
+        var tx = this.pos.x;
+        var ty = this.pos.y;
         var rx = r.x;
         var ry = r.y;
         rw += rx;
@@ -132,8 +132,7 @@ RenderJs.Canvas.Shape = Class.extend({
     *-t animation time
     */
     moveShape: function (dX, dY) {
-        this.x += dX;
-        this.y += dY;
+        this.pos = this.pos.add(dX, dY);
     },
 
     /*
