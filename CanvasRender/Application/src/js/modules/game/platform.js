@@ -1,11 +1,11 @@
 ﻿var RenderJs = RenderJs || {};
 RenderJs.Canvas = RenderJs.Canvas || {};
-RenderJs.Canvas.Shapes = RenderJs.Canvas.Shapes || {};
+RenderJs.Canvas.Game = RenderJs.Canvas.Game || {};
 
 /*
 *Represents a line shape, inherits from shape
 */
-RenderJs.Canvas.Shapes.Line = RenderJs.Canvas.Shape.extend({
+RenderJs.Canvas.Game.Platform = RenderJs.Canvas.Shape.extend({
     /*
     *Constructor
     */
@@ -37,20 +37,22 @@ RenderJs.Canvas.Shapes.Line = RenderJs.Canvas.Shape.extend({
         this.color = options.color;
         this.lineWidth = options.lineWidth || 1;
     },
+    nearestPoint: function(pos) {
+        var piece = this.points[1].sub(this.points[0]);
+        var normalizedProjection = pos.sub(this.points[0]).dot(piece);
+        if (normalizedProjection < 0)
+            return this.points[0]
+        else if (normalizedProjection > sqrLength)
+            return this.points[1]
+        else // Projection is on line
+            return this.points[0].add((piece.scale(normalizedProjection / sqrLength)))
+    },
     /*
     *Function is called in every frame to redraw itself
     *-ctx is the drawing context from a canvas
     *-fps is the frame per second
     */
     draw: function (ctx) {
-        //var posStart = RenderJs.Point(this.x(), this.y());
-        //var posEnd = RenderJs.Point(this.x() + this.width(), this.y() + this.height());
-        //if (this.lineWidth % 2 != 0) {
-        //    posStart.x += 0.5;
-        //    posStart.y += 0.5;
-        //    posEnd.x += 0.5;
-        //    posEnd.y += 0.5;
-        //}
         ctx.beginPath();
         ctx.moveTo(this.points[0], this.points[1]);
         for (var i = 2; i < this.points.length; i += 2) {

@@ -123,10 +123,14 @@
                 var gVec = new RenderJs.Vector(0, -9.78);
                 circle1.v.set(circle1.v.add(gVec));
 
-                circle1.pos.set(circle1.pos.add(circle1.v.scale((frame.time - frame.lastTime) / 1000)));
+                //r * (Math.sin(Utils.convertToRad(img.aangle))) + ox, r * (Math.cos(Utils.convertToRad(img.aangle))) + oy)
+                var acc = new RenderJs.Vector(0, 0.1);
+                var newPos = circle1.pos.scale(2).sub(circle1.prevPos).add(acc);
+                //circle1.prevPos.set(circle1.pos);
+                //circle1.pos.set(newPos);
+                circle1.pos = circle1.pos.add(circle1.v.scale((frame.time - frame.lastTime) / 1000));
+                circle2.pos = circle2.pos.add(circle2.v.scale((frame.time - frame.lastTime) / 1000));>>>>>>> 68675f6ff4371357820c1ba8026dfec5605d094a
 
-                circle2.x += circle2.v.x * ((frame.time - frame.lastTime) / 1000);
-                circle2.y += circle2.v.y * ((frame.time - frame.lastTime) / 1000);
                 circle1.angle += (circle1.w1 / (Math.PI / 180)) * ((frame.time - frame.lastTime) / 1000);
                 circle2.angle += (circle2.w2 / (Math.PI / 180)) * ((frame.time - frame.lastTime) / 1000);
             }, layer);
