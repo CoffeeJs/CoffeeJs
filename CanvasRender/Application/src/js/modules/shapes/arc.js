@@ -49,7 +49,7 @@ RenderJs.Canvas.Shapes.Arc = RenderJs.Canvas.Shape.extend({
         ctx.lineWidth = this.lineWidth;
         ctx.strokeStyle = this.color;
         ctx.fillStyle = this.fillColor;
-        ctx.arc(this.x + this.width / 2, this.y + this.height / 2, this.width / 2, this.sAngle, this.eAngle);
+        ctx.arc(this.pos.x + this.width / 2, this.pos.y + this.height / 2, this.width / 2, this.sAngle, this.eAngle);
         if (this.color)
             ctx.stroke();
         if (this.fillColor)
@@ -57,7 +57,7 @@ RenderJs.Canvas.Shapes.Arc = RenderJs.Canvas.Shape.extend({
 
         ctx.fillStyle = "white";
         ctx.font = "bold 10pt Verdana";
-        ctx.fillText("Wheel", this.x + this.radius - 20, this.y + this.radius);
+        ctx.fillText("Wheel", this.pos.x + this.radius - 20, this.pos.y + this.radius);
         ctx.closePath();
         if (this.angle != 0) {
             ctx.restore();

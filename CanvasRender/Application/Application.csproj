@@ -61,6 +61,7 @@
     <Content Include="src\js\main.js" />
     <Content Include="src\js\modules\animation.js" />
     <Content Include="src\js\modules\filters.js" />
+    <Content Include="src\js\modules\game\gamestage.js" />
     <Content Include="src\js\modules\layer.js" />
     <Content Include="src\js\modules\render.js" />
     <Content Include="src\js\modules\selector.js" />
