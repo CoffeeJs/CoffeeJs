@@ -13,6 +13,7 @@
     <script type="text/javascript" src="js/lib/bootstrap.min.js"></script>
     <script type="text/javascript" src="js/lib/StackBlur.js"></script>
     <script type="text/javascript" src="js/lib/Stats.js"></script>
+    <script type="text/javascript" src="js/lib/oops.js"></script>
 
     <script type="text/javascript" src="js/modules/utility/class.js"></script>
     <script type="text/javascript" src="js/modules/utility/linkedlist.js"></script>
@@ -27,12 +28,13 @@
     <script type="text/javascript" src="js/modules/filters.js"></script>
     <script type="text/javascript" src="js/modules/transition.js"></script>
     <script type="text/javascript" src="js/modules/shapes/shape.js"></script>
-    <script type="text/javascript" src="js/modules/shapes/line.js"></script>
-    <script type="text/javascript" src="js/modules/shapes/image.js"></script>
+    <!--<script type="text/javascript" src="js/modules/shapes/line.js"></script>
+    <script type="text/javascript" src="js/modules/shapes/image.js"></script>-->
     <script type="text/javascript" src="js/modules/shapes/arc.js"></script>
-    <script type="text/javascript" src="js/modules/shapes/rectangle.js"></script>
-    <script type="text/javascript" src="js/modules/shapes/sprite.js"></script>
+    <!--<script type="text/javascript" src="js/modules/shapes/rectangle.js"></script>-->
+    <!--<script type="text/javascript" src="js/modules/shapes/sprite.js"></script>-->
     <script type="text/javascript" src="js/modules/animation.js"></script>
+    <script type="text/javascript" src="js/modules/game/object.js"></script>
 </head>
 <body>
     <div id="viewport">
@@ -47,7 +49,7 @@
             //In pixel/s
             var v1 = new RenderJs.Vector(377.95275591, 0);
             var v2 = new RenderJs.Vector(-377.795275591, 0);
-            var circle1 = new RenderJs.Canvas.Shapes.Arc({
+            var circle1 = new RenderJs.Canvas.Shapes.Arc().init({
                 x: 0,
                 y: 280,
                 radius: 100,
@@ -59,7 +61,7 @@
             circle1.v = v1;
             circle1.pos = new RenderJs.Vector(0, 280);
             circle1.prevPos = new RenderJs.Vector(0, 280);
-            var circle2 = new RenderJs.Canvas.Shapes.Arc({
+            var circle2 = new RenderJs.Canvas.Shapes.Arc().init({
                 x: 1150,
                 y: 250,
                 radius: 25,
@@ -120,7 +122,7 @@
             });
             var anim = new RenderJs.Canvas.Animation(function (frame) {
                 //Gravity ((9.78049 / 2) * Math.pow(frame.time / 1000, 2));
-                var gVec = new RenderJs.Vector(0, -9.78);
+                var gVec = new RenderJs.Vector(0, 9.78);
                 circle1.v.set(circle1.v.add(gVec));
 
                 //r * (Math.sin(Utils.convertToRad(img.aangle))) + ox, r * (Math.cos(Utils.convertToRad(img.aangle))) + oy)
@@ -129,7 +131,7 @@
                 //circle1.prevPos.set(circle1.pos);
                 //circle1.pos.set(newPos);
                 circle1.pos = circle1.pos.add(circle1.v.scale((frame.time - frame.lastTime) / 1000));
-                circle2.pos = circle2.pos.add(circle2.v.scale((frame.time - frame.lastTime) / 1000));>>>>>>> 68675f6ff4371357820c1ba8026dfec5605d094a
+                circle2.pos = circle2.pos.add(circle2.v.scale((frame.time - frame.lastTime) / 1000));
 
                 circle1.angle += (circle1.w1 / (Math.PI / 180)) * ((frame.time - frame.lastTime) / 1000);
                 circle2.angle += (circle2.w2 / (Math.PI / 180)) * ((frame.time - frame.lastTime) / 1000);

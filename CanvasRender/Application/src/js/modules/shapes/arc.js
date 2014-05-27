@@ -5,14 +5,14 @@ RenderJs.Canvas.Shapes = RenderJs.Canvas.Shapes || {};
 /*
 *Represents a circle shape, inherits from shape
 */
-RenderJs.Canvas.Shapes.Arc = RenderJs.Canvas.Shape.extend({
+RenderJs.Canvas.Shapes.Arc = function (){
     /*
     *Constructor
     */
-    init: function (options) {
+    this.init = function (options) {
         var options = options || {};
         options.width = options.height = options.radius * 2, options.radius * 2;
-        this._super(options);
+        _super.init(options);
 
         this.radius = options.radius;
         this.sAngle = Utils.convertToRad(options.sAngle || 0);
@@ -20,27 +20,32 @@ RenderJs.Canvas.Shapes.Arc = RenderJs.Canvas.Shape.extend({
         this.color = options.color;
         this.fillColor = options.fillColor;
         this.lineWidth = options.lineWidth || 1;
-    },
+
+        return this;
+    }
+
     /*
     *Overrides the original function, because the circle center point is not the top,left corner
     */
-    getCenter: function () {
+    this.getCenter = function () {
         return RenderJs.Point(this.pos.x + this.width / 2, this.pos.y + this.height / 2);
-    },
+    }
+
     /*
     *Overrides the original function
     */
-    pointIntersect: function (p) {
+    this.pointIntersect = function (p) {
         c = this.getCenter();
 
         return Math.pow(p.x - c.x, 2) + Math.pow(p.y - c.y, 2) <= Math.pow((this.width / 2), 2);
-    },
+    }
+
     /*
     *Function is called in every frame to redraw itself
     *-ctx is the drawing context from a canvas
     *-fps is the frame per second
     */
-    draw: function (ctx) {
+    this.draw = function (ctx) {
         if (this.angle != 0) {
             ctx.save();
             this.rotateShape(ctx);
@@ -63,4 +68,5 @@ RenderJs.Canvas.Shapes.Arc = RenderJs.Canvas.Shape.extend({
             ctx.restore();
         }
     }
-});
+    this.constructor = RenderJs.Canvas.Shape;
+}.inherits(RenderJs.Canvas.Shape);
