@@ -5,7 +5,7 @@ RenderJs.Canvas.Shapes = RenderJs.Canvas.Shapes || {};
 /*
 *Represents a circle shape, inherits from shape
 */
-RenderJs.Canvas.Shapes.Arc = function (){
+RenderJs.Canvas.Shapes.Arc = function () {
     /*
     *Constructor
     */
@@ -68,5 +68,4 @@ RenderJs.Canvas.Shapes.Arc = function (){
             ctx.restore();
         }
     }
-    this.constructor = RenderJs.Canvas.Shape;
 }.inherits(RenderJs.Canvas.Shape);

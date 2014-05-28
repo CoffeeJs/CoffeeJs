@@ -173,8 +173,8 @@
             width: 1200,
             height: 800
         });
-        var animlayer = stage.createLayer("AnimLayer");
-        var staticlayer = stage.createLayer("StaticLayer");
+        var animlayer = stage.createLayer(true);
+        var staticlayer = stage.createLayer(false);
         transition(animlayer);
         //sprite(staticlayer);
     </script>

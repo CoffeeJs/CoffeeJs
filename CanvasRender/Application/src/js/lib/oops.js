@@ -65,7 +65,7 @@ Function.prototype.implements = function(iFaces){
 	for(var i = 0, l = arguments.length; i < l; i++){
 		var iFace = arguments[i];
 		for(var m in iFace){
-			if(m && !iFace[m]._isEmpty()){
+		    if (m && typeof iFace[m] === "function" && !iFace[m]._isEmpty()) {
 				throw("Interface method " + m + " should not have body."); 
 			}
         	if(m && m != "_super" && m != "implements" && m != "inherits" && typeof(iFace[m]) != typeof(org[m])){
@@ -322,13 +322,16 @@ Function.prototype.inherits = function(parentClass){
 	// so replace super.m for private m's to just m's in child which are availble in child if were there is parent;
 	childProps = childProps.replace(rgx,"$1");
 	
-	newObjectProps = "("+parentProps + childProps+".add$Proto())";
+	newObjectProps = "("+parentProps + childProps+")";
 	//delete this; some browsers don't allow to delete this
 	//console.log(newObjectProps);
 	var resClass = eval(newObjectProps);
+    //
+    //Set the prototype to the parent
+	resClass.prototype = op;
+	resClass.constructor = this;
+
 	return resClass;
-	// eval is EVIL but we need it here. how it will hurt us? (yes - performance is slow, any others? like loosing context anything.)
-	// So far I found it to be working the way it is expected.
 };
 
 /**
@@ -357,14 +360,4 @@ Function.prototype.inheritsNative = function(nativeClass){
     source = "(function(){var _super = this._super = new "+ s +"();" + source + ".add$Proto())";
     source = source.replace(/_super\.(\w+)\s*\(/igm,"_super.$1.call(this,");
     return eval(source);
-};  
-
-Function.prototype.add$Proto = function(parentClass){
-    var obj = new this();
-    if(obj._super)
-        this.prototype = obj._super;
-    else
-        this.prototype = new Object(); 
-    return this;    
-}
-
+};

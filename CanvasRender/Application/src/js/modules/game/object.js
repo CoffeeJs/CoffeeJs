@@ -12,3 +12,16 @@ RenderJs.Canvas.Game.Object = function () {
     }
 
 };
+
+var MyClass = function () {
+
+}
+
+var DerivedClass = function () {
+
+}
+
+DerivedClass.prototype = new MyClass();
+DerivedClass.constructor = DerivedClass;
+
+var derived = new DerivedClass();

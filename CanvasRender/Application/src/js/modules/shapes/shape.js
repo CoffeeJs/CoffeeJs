@@ -174,6 +174,12 @@ RenderJs.Canvas.Shape = function () {
             return;
         _eventManager.unsubscribe(type, handler);
     }
+
+    this.trigger = function (event, args) {
+        if (!RenderJs.Canvas.Events[event])
+            return;
+        _eventManager.trigger(event, args);
+    }
 };
 
 
