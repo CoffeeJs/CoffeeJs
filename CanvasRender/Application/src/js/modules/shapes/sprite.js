@@ -4,74 +4,76 @@ RenderJs.Canvas.Shapes = RenderJs.Canvas.Shapes || {};
 /*
 *Represents a sprite image, inherits from shape
 */
-RenderJs.Canvas.Shapes.Sprite = RenderJs.Canvas.Shape.extend({
+RenderJs.Canvas.Shapes.Sprite = function (options) {
+
+    /*
+     * Locals
+     */
+    var image = document.createElement("img");
+    var loaded = false;
+    var frameIndex = 0;
+    var frameCount = 0;
+    var started = false;
+    var loop = false;
+    var defAnimation = "";
+    var current = undefined;
+    var previous = undefined;
+    var animations = undefined;
+
+    var animation = function (name, loop) {
+        frameIndex = 0;
+        started = true;
+        loop = loop;
+
+        if (!animations[name]) return;
+        previous = current;
+        current = animations[name];
+    }
+
     /*
     *Constructor
     */
-    init: function (options) {
+    var _init = function (options) {
         var self = this;
 
         var options = options || {};
-        this._super({ x: options.x, y: options.y });
-        this.image = document.createElement("img");
-        this.loaded = false;
-        //this.blurRadius = options.blurRadius || 0;
-        //this.cache = options.cache == undefined ? true : options.cache;
-        //this.filterCache = null;
-        this.frameIndex = 0;
-        this.frameCount = options.frameCount;
-        this.started = false;
-        this.loop = false;
-        this.defAnimation = options.defAnimation;
-        this.current = undefined;
-        this.animations = options.animations;
-        this.image.onload = function () {
-            self.width = self.image.width;
-            self.height = self.image.height;
-            self.loaded = true;
+        this._baseInit(options);
+        
+        frameCount = options.frameCount;
+        defAnimation = options.defAnimation;
+        animations = options.animations;
+        image.onload = function () {
+            self.width = image.width;
+            self.height = image.height;
+            loaded = true;
         };
-        this.image.src = options.url;
-    },
-    start: function () {
-        this.animation(this.defAnimation, true);
-    },
-    pointIntersect: function () { return false; },
-    animation: function (name, loop) {
-        this.frameIndex = 0;
-        this.started = true;
-        this.loop = loop;
+        image.src = options.url;
+    }
 
-        if (!this.animations[name]) return;
-        this.previous = this.current;
-        this.current = this.animations[name];
-    },
+    this.start = function () {
+        animation(defAnimation, true);
+    }
+
+    this.pointIntersect = function () { return false; }
+
     /*
     *Function is called in every frame to redraw itself
     *-ctx is the drawing context from a canvas
     */
-    draw: function (ctx, frame) {
-        if (!this.loaded || !this.started) return;
+    this.draw = function (ctx, frame) {
+        if (!loaded || !started) return;
 
-        //if (!this.filterCache)
-        //    for (var i = 0; i < this.filters.length; i++) {
-        //        switch (this.filters[i]) {
-        //            case RenderJs.Canvas.Filters.Blur:
-        //                this.filterCache = RenderJs.Canvas.Filters.Blur(this.image, this.blurRadius);
-        //                break;
-        //        }
-        //    }
-        //if (this.filterCache)
-        //    ctx.putImageData(this.filterCache, this.x, this.y);
-        //else
-        var aktFrame = this.frameIndex * 4;
+        var aktFrame = frameIndex * 4;
 
-        var anim =
-
-        ctx.drawImage(this.image, this.current[aktFrame], this.current[aktFrame + 1], this.current[aktFrame + 2], this.current[aktFrame + 3], this.x, this.y, this.current[aktFrame + 2], this.current[aktFrame + 3]);
-        if (frame.time / (1000 / frame.frameRate) % this.frameCount == 0) {
-            this.frameIndex = (this.frameIndex * 4 + 4) > this.current.length - 1 ? 0 : this.frameIndex + 1;
-            if (this.frameIndex == 0 && !this.loop)
-                this.animation(this.defAnimation, true);
+        ctx.drawImage(image, current[aktFrame], current[aktFrame + 1], current[aktFrame + 2], current[aktFrame + 3], this.pos.x, this.pos.y, current[aktFrame + 2], this.current[aktFrame + 3]);
+        if (frame.time / (1000 / frame.frameRate) % frameCount == 0) {
+            frameIndex = (frameIndex * 4 + 4) > current.length - 1 ? 0 : frameIndex + 1;
+            if (frameIndex == 0 && !loop)
+                animation(defAnimation, true);
         }
     }
-});
+
+    _init.call(this, options);
+}
+RenderJs.Canvas.Shapes.Sprite.prototype = new RenderJs.Canvas.Object();
+RenderJs.Canvas.Shapes.Sprite.constructor = RenderJs.Canvas.Shapes.Sprite;

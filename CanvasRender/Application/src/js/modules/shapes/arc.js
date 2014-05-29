@@ -5,14 +5,16 @@ RenderJs.Canvas.Shapes = RenderJs.Canvas.Shapes || {};
 /*
 *Represents a circle shape, inherits from shape
 */
-RenderJs.Canvas.Shapes.Arc = function () {
+RenderJs.Canvas.Shapes.Arc = function (options) {
     /*
     *Constructor
     */
-    this.init = function (options) {
+    var _init = function (options) {
         var options = options || {};
         options.width = options.height = options.radius * 2, options.radius * 2;
-        _super.init(options);
+        //
+        //For the base class
+        this._baseInit(options);
 
         this.radius = options.radius;
         this.sAngle = Utils.convertToRad(options.sAngle || 0);
@@ -20,15 +22,13 @@ RenderJs.Canvas.Shapes.Arc = function () {
         this.color = options.color;
         this.fillColor = options.fillColor;
         this.lineWidth = options.lineWidth || 1;
-
-        return this;
     }
 
     /*
     *Overrides the original function, because the circle center point is not the top,left corner
     */
     this.getCenter = function () {
-        return RenderJs.Point(this.pos.x + this.width / 2, this.pos.y + this.height / 2);
+        return new RenderJs.Point(this.pos.x + this.width / 2, this.pos.y + this.height / 2);
     }
 
     /*
@@ -68,4 +68,9 @@ RenderJs.Canvas.Shapes.Arc = function () {
             ctx.restore();
         }
     }
-}.inherits(RenderJs.Canvas.Shape);
+
+    _init.call(this, options);
+    
+}
+RenderJs.Canvas.Shapes.Arc.prototype = new RenderJs.Canvas.Object();
+RenderJs.Canvas.Shapes.Arc.constructor = RenderJs.Canvas.Shapes.Arc;

@@ -62,9 +62,7 @@
     <Content Include="src\js\main.js" />
     <Content Include="src\js\modules\animation.js" />
     <Content Include="src\js\modules\filters.js" />
-    <Content Include="src\js\modules\game\object.js" />
-    <Content Include="src\js\modules\game\gamestage.js" />
-    <Content Include="src\js\modules\game\shape.js" />
+    <Content Include="src\js\modules\game\physics.js" />
     <Content Include="src\js\modules\layer.js" />
     <Content Include="src\js\modules\render.js" />
     <Content Include="src\js\modules\selector.js" />
@@ -72,12 +70,11 @@
     <Content Include="src\js\modules\shapes\image.js" />
     <Content Include="src\js\modules\shapes\line.js" />
     <Content Include="src\js\modules\shapes\rectangle.js" />
-    <Content Include="src\js\modules\shapes\shape.js" />
+    <Content Include="src\js\modules\object.js" />
     <Content Include="src\js\modules\shapes\sprite.js" />
     <Content Include="src\js\modules\stage.js" />
     <Content Include="src\js\modules\transition.js" />
     <Content Include="src\js\modules\utility\array.js" />
-    <Content Include="src\js\modules\utility\class.js" />
     <Content Include="src\js\modules\utility\eventmanager.js" />
     <Content Include="src\js\modules\utility\general.js" />
     <Content Include="src\js\modules\utility\graphics.js" />

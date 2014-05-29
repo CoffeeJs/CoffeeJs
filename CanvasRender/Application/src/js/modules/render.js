@@ -1,19 +1,27 @@
 ﻿var RenderJs = RenderJs || {};
 
 RenderJs.Point = function (x, y) {
-    return {
-        x: x || 0,
-        y: y || 0,
-        equalsTo: function (p) {
-            return x === p.x && y === p.y;
-        }
-    };
+    this.x = x || 0;
+    this.y = y || 0;
+    this.set = function (p) {
+        this.x = p.x
+        this.y = p.y
+    }
+    this.add = function (p) {
+        if (p instanceof RenderJs.Point)
+            return new RenderJs.Point(this.x + p.x, this.y + p.y)
+        else
+            return new RenderJs.Point(this.x + p, this.y + p)
+    }
+    this.equalsTo = function (p) {
+        return x === p.x && y === p.y;
+    }
 }
 
 RenderJs.Vector = function (x, y) {
     this.x = x || 0;
     this.y = y || 0;
-    
+
     this.set = function (v) {
         this.x = v.x
         this.y = v.y

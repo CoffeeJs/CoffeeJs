@@ -15,7 +15,6 @@
     <script type="text/javascript" src="js/lib/Stats.js"></script>
     <script type="text/javascript" src="js/lib/oops.js"></script>
 
-    <script type="text/javascript" src="js/modules/utility/class.js"></script>
     <script type="text/javascript" src="js/modules/utility/linkedlist.js"></script>
     <script type="text/javascript" src="js/modules/utility/EventManager.js"></script>
     <script type="text/javascript" src="js/modules/utility/general.js"></script>
@@ -27,14 +26,14 @@
     <script type="text/javascript" src="js/modules/render.js"></script>
     <script type="text/javascript" src="js/modules/filters.js"></script>
     <script type="text/javascript" src="js/modules/transition.js"></script>
-    <script type="text/javascript" src="js/modules/shapes/shape.js"></script>
+    <script type="text/javascript" src="js/modules/object.js"></script>
     <!--<script type="text/javascript" src="js/modules/shapes/line.js"></script>
     <script type="text/javascript" src="js/modules/shapes/image.js"></script>-->
     <script type="text/javascript" src="js/modules/shapes/arc.js"></script>
     <!--<script type="text/javascript" src="js/modules/shapes/rectangle.js"></script>-->
     <!--<script type="text/javascript" src="js/modules/shapes/sprite.js"></script>-->
     <script type="text/javascript" src="js/modules/animation.js"></script>
-    <script type="text/javascript" src="js/modules/game/object.js"></script>
+    <script type="text/javascript" src="js/modules/game/physics.js"></script>
 </head>
 <body>
     <div id="viewport">
@@ -49,7 +48,7 @@
             //In pixel/s
             var v1 = new RenderJs.Vector(377.95275591, 0);
             var v2 = new RenderJs.Vector(-377.795275591, 0);
-            var circle1 = new RenderJs.Canvas.Shapes.Arc().init({
+            var circle1 = new RenderJs.Canvas.Shapes.Arc({
                 x: 0,
                 y: 280,
                 radius: 100,
@@ -61,7 +60,7 @@
             circle1.v = v1;
             circle1.pos = new RenderJs.Vector(0, 280);
             circle1.prevPos = new RenderJs.Vector(0, 280);
-            var circle2 = new RenderJs.Canvas.Shapes.Arc().init({
+            var circle2 = new RenderJs.Canvas.Shapes.Arc({
                 x: 1150,
                 y: 250,
                 radius: 25,
@@ -73,8 +72,8 @@
             circle2.v = v2;
             circle1.w1 = 0;
             circle2.w2 = 0;
-            layer.addShape(circle1);
-            layer.addShape(circle2);
+            layer.addObject(circle1);
+            layer.addObject(circle2);
             circle1.on("collision", function () {
                 //
                 //Perfectly unelastic movement
@@ -178,9 +177,6 @@
         transition(animlayer);
         //sprite(staticlayer);
     </script>
-    <script type="text/javascript" src="js/lib/underscore-min.js"></script>
-    <script type="text/javascript" src="js/lib/knockout-3.1.0.js"></script>
-
     <script type="text/javascript" src="js/main.js"></script>
 
 </body>

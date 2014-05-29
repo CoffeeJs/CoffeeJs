@@ -47,10 +47,3 @@
         };
     }
 }
-
-//Interface for a listnode
-//
-var IListItem = {
-    prev: null,
-    next: null
-};

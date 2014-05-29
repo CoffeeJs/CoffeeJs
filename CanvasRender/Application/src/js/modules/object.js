@@ -1,11 +1,13 @@
 ﻿var RenderJs = RenderJs || {};
 RenderJs.Canvas = RenderJs.Canvas || {};
-RenderJs.Canvas.Game = RenderJs.Canvas.Game || {};
+RenderJs.Canvas.Shapes = RenderJs.Canvas.Shapes || {};
+
+RenderJs.Canvas.Events = { animate: "animate", click: "click", mousemove: "mousemove", mousehover: "mousehover", mouseleave: "mouseleave", collision: "collision" };
 
 /*
 *Represents a base class for different type of shapes
 */
-RenderJs.Canvas.Game.Shape = function () {
+RenderJs.Canvas.Object = function () {
     /*
      * Locals
      */
@@ -14,7 +16,7 @@ RenderJs.Canvas.Game.Shape = function () {
     /*
     *Constructor
     */
-    this.init = function (options) {
+    this._baseInit = function (options) {
         options = options || {};
         this.pos = new RenderJs.Vector(options.x, options.y);
         this.width = options.width || 0;
@@ -32,7 +34,7 @@ RenderJs.Canvas.Game.Shape = function () {
     *Returns with the center point of the shape
     */
     this.getCenter = function () {
-        return RenderJs.Point(this.pos.x + (this.width) / 2, this.pos.y + (this.height) / 2);
+        return new RenderJs.Point(this.pos.x + (this.width) / 2, this.pos.y + (this.height) / 2);
     }
     /*
     *Returns with the rect around the shape
@@ -158,14 +160,22 @@ RenderJs.Canvas.Game.Shape = function () {
         ctx.scale(scaleX, scaleY);
         ctx.translate(-o.x, -o.y);
     }
+
     this.on = function (type, handler) {
         if (!RenderJs.Canvas.Events[type])
             return;
         _eventManager.subscribe(type, handler);
     }
+
     this.off = function (type, handler) {
         if (!RenderJs.Canvas.Events[type])
             return;
         _eventManager.unsubscribe(type, handler);
     }
-};
+
+    this.trigger = function (event, args) {
+        if (!RenderJs.Canvas.Events[event])
+            return;
+        _eventManager.trigger(event, args);
+    }
+}

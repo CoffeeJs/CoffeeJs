@@ -11,15 +11,15 @@ RenderJs.Canvas.Stage = function (options) {
     var _eventManager = new EventManager();
     var _stats = new Stats();
 
-    var invalidate = function () {
+    var _invalidate = function () {
         var self = this;
         _stats.begin();
         var enumerator = this.layers.getEnumerator();
         while (enumerator.next() != undefined) {
-            enumerator.current().drawShapes(_FPS);
+            enumerator.current().drawObjects(_FPS);
         }
 
-        requestAnimationFrame(function () { invalidate.call(self); });
+        requestAnimationFrame(function () { _invalidate.call(self); });
         _stats.end();
     }
 
@@ -27,7 +27,10 @@ RenderJs.Canvas.Stage = function (options) {
     this.width = 1200;
     this.height = 800;
 
-    this.init = function () {
+    /*
+     * Constructor
+     */
+    var _init = function (options) {
         _container = options.container || "viewport";
         _stats.setMode(0);
         this.width = options.width || 1200;
@@ -42,7 +45,7 @@ RenderJs.Canvas.Stage = function (options) {
         document.getElementById(_container).style.width = this.width + "px";
         document.getElementById(_container).style.height = this.height + "px";
 
-        invalidate.call(this);
+        _invalidate.call(this);
     }
     
     this.onInvalidate = function (handler) {
@@ -50,11 +53,11 @@ RenderJs.Canvas.Stage = function (options) {
     }
 
     this.createLayer= function (active) {
-        var layer = new RenderJs.Canvas.Layer().init(_container, this.width, this.height, active);
+        var layer = new RenderJs.Canvas.Layer(_container, this.width, this.height, active);
         this.layers.append(layer);
 
         return layer;
     }
 
-    this.init();
+    _init.call(this, options);
 }

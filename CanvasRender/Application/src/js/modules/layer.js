@@ -1,7 +1,7 @@
 ﻿var RenderJs = RenderJs || {};
 RenderJs.Canvas = RenderJs.Canvas || {};
 
-RenderJs.Canvas.Layer = function () {
+RenderJs.Canvas.Layer = function (container, width, height, active) {
     /*
      * Locals
      */
@@ -17,9 +17,9 @@ RenderJs.Canvas.Layer = function () {
     var _clickHandler = function (event, position) {
         var position = position || Utils.getMousePos(event.target, event);
         _eventManager.trigger(RenderJs.Canvas.Events.click, [event, position]);
-        for (var i = this.shapes.length - 1; i >= 0; i--) {
-            if (this.shapes[i].pointIntersect(position)) {
-                this.shapes[i].trigger(RenderJs.Canvas.Events.click, event)
+        for (var i = this.objects.length - 1; i >= 0; i--) {
+            if (this.objects[i].pointIntersect(position)) {
+                this.objects[i].trigger(RenderJs.Canvas.Events.click, event)
                 return true;
             }
         }
@@ -32,9 +32,9 @@ RenderJs.Canvas.Layer = function () {
     var _mousemoveHandler = function (event, position) {
         var position = position || Utils.getMousePos(event.target, event);
         _eventManager.trigger(RenderJs.Canvas.Events.mousemove, [event, position]);
-        for (var i = this.shapes.length - 1; i >= 0; i--) {
-            if (this.shapes[i].pointIntersect(position)) {
-                this.shapes[i].trigger(RenderJs.Canvas.Events.mousemove, [event, position])
+        for (var i = this.objects.length - 1; i >= 0; i--) {
+            if (this.objects[i].pointIntersect(position)) {
+                this.objects[i].trigger(RenderJs.Canvas.Events.mousemove, [event, position])
                 return true;
             }
         }
@@ -47,9 +47,9 @@ RenderJs.Canvas.Layer = function () {
     var _mouseenterHandler = function (event, position) {
         var position = position || Utils.getMousePos(event.target, event);
         _eventManager.trigger(RenderJs.Canvas.Events.mouseenter, [event, position]);
-        for (var i = this.shapes.length - 1; i >= 0; i--) {
-            if (this.shapes[i].pointIntersect(position)) {
-                this.shapes[i].trigger(RenderJs.Canvas.Events.mouseenter, [event, position])
+        for (var i = this.objects.length - 1; i >= 0; i--) {
+            if (this.objects[i].pointIntersect(position)) {
+                this.objects[i].trigger(RenderJs.Canvas.Events.mouseenter, [event, position])
                 return true;
             }
         }
@@ -62,9 +62,9 @@ RenderJs.Canvas.Layer = function () {
     var _mouseleaveHandler = function (event, position) {
         var position = position || Utils.getMousePos(event.target, event);
         _eventManager.trigger(RenderJs.Canvas.Events.mouseleave, [event, position]);
-        for (var i = this.shapes.length - 1; i >= 0; i--) {
-            if (this.shapes[i].pointIntersect(position)) {
-                this.shapes[i].trigger(RenderJs.Canvas.Events.mouseleave, [event, position])
+        for (var i = this.objects.length - 1; i >= 0; i--) {
+            if (this.objects[i].pointIntersect(position)) {
+                this.objects[i].trigger(RenderJs.Canvas.Events.mouseleave, [event, position])
                 return true;
             }
         }
@@ -74,7 +74,7 @@ RenderJs.Canvas.Layer = function () {
 
     //
     //Constructor
-    this.init = function (container, width, height, active) {
+    var _init = function (container, width, height, active) {
         _imaginaryCtx = Utils.getCanvas(width, height).getContext("2d");
         document.getElementById(container).appendChild(this.canvas);
         this.canvas.width = width;
@@ -97,18 +97,16 @@ RenderJs.Canvas.Layer = function () {
         $(this.canvas).on("mouseleave", function (event, position) {
             _mouseleaveHandler.call(_self, event, position);
         });
-
-        return this;
     }
 
     //
-    //IListItem implementation
+    //For the linked list
     this.prev = null;
     this.next = null;
 
     //
-    //Array of shapes on the layer
-    this.shapes = [];
+    //Array of objects on the layer
+    this.objects = [];
     this.canvas = document.createElement("canvas");
     this.ctx = this.canvas.getContext("2d");
     this.active = false;
@@ -129,21 +127,21 @@ RenderJs.Canvas.Layer = function () {
     }
 
     //
-    //Add a shape object to the layer, it will be rendered on this layer
-    this.addShape = function (shape) {
-        if (!(shape instanceof RenderJs.Canvas.Shape)) {
+    //Add an object to the layer, it will be rendered on this layer
+    this.addObject = function (object) {
+        if (!(object instanceof RenderJs.Canvas.Object)) {
             console.log("An object on the canvas should be inherited from CanvasObject!");
             return;
         }
-        shape.layer = this;
-        this.shapes.push(shape);
+        object.layer = this;
+        this.objects.push(object);
     }
 
     //
     //Returns true if the layer has sprite objects otherwise false
     var hasSprites = function () {
-        for (var i = 0, length = this.shapes.length; i < length; i++) {
-            if (this.shapes[i] instanceof RenderJs.Canvas.Shapes.Sprite)
+        for (var i = 0, length = this.objects.length; i < length; i++) {
+            if (this.objects[i] instanceof RenderJs.Canvas.Shapes.Sprite)
                 return true;
         }
         return false;
@@ -151,17 +149,17 @@ RenderJs.Canvas.Layer = function () {
 
     //
     //Redraw objects on tha layer if it's neccessary
-    this.drawShapes = function (frame) {
-        if ((_initialized && !_eventManager.hasSubscribers('animate') && !hasSprites()) || this.shapes.length == 0) return;
+    this.drawObjects = function (frame) {
+        if ((_initialized && !_eventManager.hasSubscribers('animate') && !hasSprites()) || this.objects.length == 0) return;
 
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
         _eventManager.trigger("animate", frame);
-        var shapesLoaded = true;
-        for (var i = 0, length = this.shapes.length; i < length; i++) {
-            if (!this.shapes[i].loaded)
-                shapesLoaded = false;
-            this.shapes[i].draw(this.ctx, {
+        var objectsLoaded = true;
+        for (var i = 0, length = this.objects.length; i < length; i++) {
+            if (!this.objects[i].loaded)
+                objectsLoaded = false;
+            this.objects[i].draw(this.ctx, {
                 frameRate: frame,
                 lastTime: this._time,
                 time: this._time + 1000 / frame
@@ -169,23 +167,25 @@ RenderJs.Canvas.Layer = function () {
             //
             //Collision detection
             var collisionObjects = [];
-            for (var j = 0, jl = this.shapes.length; j < jl; j++) {
-                if (this.shapes[j].collision && i != j)
-                    collisionObjects.push(this.shapes[j]);
+            for (var j = 0, jl = this.objects.length; j < jl; j++) {
+                if (this.objects[j].collision && i != j)
+                    collisionObjects.push(this.objects[j]);
             }
 
-            if (this.shapes[i].collision) {
+            if (this.objects[i].collision) {
                 for (var k = 0, kl = collisionObjects.length; k < kl; k++) {
-                    if (this.shapes[i].pixelCollision(collisionObjects[k], _imaginaryCtx)) {
-                        this.shapes[i]._eventManager.trigger(RenderJs.Canvas.Events.collision, collisionObjects[k]);
-                        collisionObjects[k]._eventManager.trigger(RenderJs.Canvas.Events.collision, this.shapes[i]);
+                    if (this.objects[i].pixelCollision(collisionObjects[k], _imaginaryCtx)) {
+                        this.objects[i]._eventManager.trigger(RenderJs.Canvas.Events.collision, collisionObjects[k]);
+                        collisionObjects[k]._eventManager.trigger(RenderJs.Canvas.Events.collision, this.objects[i]);
                     }
                 }
             }
         }
-        if (shapesLoaded)
+        if (objectsLoaded)
             _initialized = true;
         _time += 1000 / frame;
     }
-}.implements(IListItem);
+
+    _init.call(this, container, width, height, active);
+}
 

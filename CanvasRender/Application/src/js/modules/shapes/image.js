@@ -4,47 +4,60 @@ RenderJs.Canvas.Shapes = RenderJs.Canvas.Shapes || {};
 /*
 *Represents an image, inherits from shape
 */
-RenderJs.Canvas.Shapes.Image = RenderJs.Canvas.Shape.extend({
+RenderJs.Canvas.Shapes.Image = function (options) {
+    /*
+     * Locals
+     */
+    var _image = document.createElement("img");
+    var _loaded = false;
+    var _blurRadius = 0;
+    var _cache = true;
+    var _filterCache = null;
+
     /*
     *Constructor
     */
-    init: function (options) {
+    var _init = function (options) {
         var self = this;
-
         var options = options || {};
-        this._super(options);
-        this.image = document.createElement("img");
-        this.image.src = options.url;
-        this.loaded = false;
-        this.blurRadius = options.blurRadius || 0;
-        this.cache = options.cache == undefined ? true : options.cache;
-        this.filterCache = null;
-        this.image.onload = function () {
-            self.width = self.image.width;
-            self.height = self.image.height;
-            self.loaded = true;
+
+        this._baseInit(options);
+        _image.src = options.url;
+        _blurRadius = options.blurRadius || 0;
+        _cache = options.cache == undefined ? true : options.cache;
+        _filterCache = null;
+        _image.onload = function () {
+            self.width = _image.width;
+            self.height = _image.height;
+            _loaded = true;
         };
-    },
+    }
+
     /*
     *Function is called in every frame to redraw itself
     *-ctx is the drawing context from a canvas
     */
-    draw: function (ctx) {
-        if (!this.loaded) return;
+    this.draw = function (ctx) {
+        if (!_loaded) return;
 
-        if (!this.filterCache)
+        if (!_filterCache)
             for (var i = 0; i < this.filters.length; i++) {
                 switch (this.filters[i]) {
                     case RenderJs.Canvas.Filters.Blur:
-                        this.filterCache = RenderJs.Canvas.Filters.Blur(this.image, this.blurRadius);
+                        _filterCache = RenderJs.Canvas.Filters.Blur(_image, _blurRadius);
                         break;
                 }
             }
-        if (this.filterCache)
-            ctx.putImageData(this.filterCache, this.x, this.y);
+        if (_filterCache)
+            ctx.putImageData(_filterCache, this.pos.x, this.pos.y);
         else
-            ctx.drawImage(this.image, this.x, this.y);
-        if (!this.cache)
-            this.filterCache = null;
+            ctx.drawImage(_image, this.pos.x, this.pos.y);
+        if (!_cache)
+            _filterCache = null;
     }
-});
+
+    _init.call(this, options);
+}
+
+RenderJs.Canvas.Shapes.Image.prototype = new RenderJs.Canvas.Object();
+RenderJs.Canvas.Shapes.Image.constructor = RenderJs.Canvas.Shapes.Image;
