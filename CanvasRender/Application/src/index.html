@@ -185,6 +185,13 @@
                 color: "#333",
             });
 
+            var arc2 = new RenderJs.Canvas.Shapes.Arc({
+                x: 200,
+                y: 300,
+                radius: 50,
+                color: "#333",
+            });
+
             var poly = new RenderJs.Canvas.Shapes.Polygon({
                 x: 0,
                 y: 0,
@@ -204,25 +211,23 @@
                     new RenderJs.Vector(0, 100)],
                 fillColor: "#333",
             });
-            layer.addObject(line);
             layer.addObject(arc);
+            layer.addObject(arc2);
             layer.addObject(poly);
             layer.addObject(poly2);
 
             layer.on("mousemove", function (evt, position) {
-                var velocity = new RenderJs.Vector(position.x - poly.pos.x, position.y - poly.pos.y);
+                var velocity = new RenderJs.Vector(position.x - arc.pos.x, position.y - arc.pos.y);
                 var playerTranslation = new RenderJs.Vector(velocity.x, velocity.y);
 
-                r = RenderJs.Physics.Collisions.polygonCollision(poly, poly2, velocity);
+                r = RenderJs.Physics.Collisions.checkCollision(arc, arc2, velocity);
 
-                if (r.willIntersect) {
-                    playerTranslation = velocity.add(r.minimumTranslationVector);
+                if (r) {
+                    playerTranslation = velocity.add(r);
                 }
-                //if (r)
-                //    console.log("collision");
 
-                poly.pos.set(poly.pos.add(playerTranslation));
-                poly.offset(playerTranslation);
+                arc.pos.set(arc.pos.add(playerTranslation));
+                //poly.offset(playerTranslation);
             });
         }
         var stage = new RenderJs.Canvas.Stage({

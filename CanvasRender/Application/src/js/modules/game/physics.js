@@ -150,6 +150,21 @@ RenderJs.Physics.Collisions = (function (module) {
         }
     }
 
+    var _circleVsCircle = function (c1, c2) {
+        //add both radii together to get the colliding distance
+        var totalRadius = c1.radius + c2.radius;
+        //find the distance between the two circles using Pythagorean theorem. No square roots for optimization
+        var distanceSquared = (c1.pos.x - c2.pos.x) * (c1.pos.x - c2.pos.x) + (c1.pos.y - c2.pos.y) * (c1.pos.y - c2.pos.y);
+        //if your distance is less than the totalRadius square(because distance is squared)
+        if (distanceSquared < totalRadius * totalRadius) {
+            //find the difference. Square roots are needed here.
+            var difference = totalRadius - Math.sqrt(distanceSquared);
+            //find the movement needed to separate the circles
+            return new RenderJs.Vector((c2.pos.x - c1.pos.x) * difference, (c2.pos.y - c1.pos.y) * difference);
+        }
+        return null; //no collision, return null
+    }
+
     var _pointInRectangle = function (p, r) {
         return (p.x >= r.x &&
             p.x <= r.x + r.width &&
@@ -178,6 +193,9 @@ RenderJs.Physics.Collisions = (function (module) {
             return _rectVsCircle(obj1, obj2);
         if (obj1 instanceof RenderJs.Canvas.Shapes.Arc && obj2 instanceof RenderJs.Canvas.Shapes.Rectangle)
             return _rectVsCircle(obj2, obj1);
+
+        if (obj1 instanceof RenderJs.Canvas.Shapes.Arc && obj2 instanceof RenderJs.Canvas.Shapes.Arc)
+            return _circleVsCircle(obj1, obj2);
 
         if (obj1 instanceof RenderJs.Canvas.Shapes.Line && obj2 instanceof RenderJs.Canvas.Shapes.Arc)
             return _lineVsCircle(obj1, obj2);
