@@ -1,23 +1,5 @@
 ﻿var RenderJs = RenderJs || {};
 
-RenderJs.Point = function (x, y) {
-    this.x = x || 0;
-    this.y = y || 0;
-    this.set = function (p) {
-        this.x = p.x
-        this.y = p.y
-    }
-    this.add = function (p) {
-        if (p instanceof RenderJs.Point)
-            return new RenderJs.Point(this.x + p.x, this.y + p.y)
-        else
-            return new RenderJs.Point(this.x + p, this.y + p)
-    }
-    this.equalsTo = function (p) {
-        return x === p.x && y === p.y;
-    }
-}
-
 RenderJs.Vector = function (x, y) {
     this.x = x || 0;
     this.y = y || 0;
@@ -69,29 +51,11 @@ RenderJs.Vector = function (x, y) {
         return this.dot(v) / (this.length * v.length)
     }
 
-    this.toString = function () {
-        return "(" + this.x + ", " + this.y + ")"
+    this.toString = function (rounded) {
+        if (rounded)
+            return "(" + Math.round(this.x) + ", " + Math.round(this.y) + ")";
+        else
+            return "(" + this.x + ", " + this.y + ")";
     }
 
-}
-
-RenderJs.Rect = function (x, y, width, height) {
-    return {
-        x: x,
-        y: y,
-        width: width,
-        height: height,
-        left: function () {
-            return x;
-        },
-        right: function () {
-            return x + width;
-        },
-        top: function () {
-            return y;
-        },
-        bottom: function () {
-            return y + height;
-        }
-    }
 }

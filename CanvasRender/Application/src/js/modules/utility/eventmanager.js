@@ -25,7 +25,7 @@ var EventManager;
         return id;
     },
     hasSubscribers: function (type) {
-        return  this.listeners[type] && this.listeners[type].length > 0;
+        return this.listeners && this.listeners[type] && this.listeners[type].length > 0;
     },
     unsubscribe: function (type, id) {
         var i = this.listeners[type].length;

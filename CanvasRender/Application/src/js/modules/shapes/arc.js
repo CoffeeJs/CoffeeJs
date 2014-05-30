@@ -28,7 +28,7 @@ RenderJs.Canvas.Shapes.Arc = function (options) {
     *Overrides the original function, because the circle center point is not the top,left corner
     */
     this.getCenter = function () {
-        return new RenderJs.Point(this.pos.x + this.width / 2, this.pos.y + this.height / 2);
+        return new RenderJs.Vector(this.pos.x + this.width / 2, this.pos.y + this.height / 2);
     }
 
     /*

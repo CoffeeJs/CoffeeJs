@@ -1,5 +1,7 @@
 ﻿var RenderJs = RenderJs || {};
-RenderJs.Physics = (function (module) {
+RenderJs.Physics = RenderJs.Physics || {};
+
+RenderJs.Physics.Collisions = (function (module) {
 
     var _rayCastingAlg = function (p, edge) {
         'takes a point p=Pt() and an edge of two endpoints a,b=Pt() of a line segment returns boolean';
@@ -40,16 +42,28 @@ RenderJs.Physics = (function (module) {
         return intersect;
     }
 
-    var _pointInPolygon = function (p, edges) {
+    var _pointInPolygon = function (p, polygon) {
         var res = false;
-        for (var i = 0; i < edges.length; i++) {
-            if (_rayCastingAlg(p, edges[i]))
+        for (var i = 0; i < polygon.rEdges.length; i++) {
+            if (_rayCastingAlg(p, polygon.rEdges[i]))
                 res = !res;
         }
         return res;
     }
 
-    var _AABB = function (r1, r2) {
+    var _pointInLine = function (p, line) {
+        var m = (line.pos2.y - line.pos.y) / (line.pos2.x - line.pos.x);
+
+        return p.y - line.pos.y == m * (p.x - line.pos.y);
+    }
+
+    var _pointInCircle = function (p, c) {
+        o = c.getCenter();
+
+        return Math.pow(p.x - o.x, 2) + Math.pow(p.y - o.y, 2) <= Math.pow((this.width / 2), 2);
+    }
+
+    var _rectVsRect = function (r1, r2) {
         var tw = r1.width;
         var th = r1.height;
         var rw = r2.width;
@@ -72,46 +86,110 @@ RenderJs.Physics = (function (module) {
         (th < ty || th > ry));
     }
 
-    var _RectVsCircle = function (r, c) {
-
+    var _rectVsCircle = function (r, c) {
+        return _pointInRectangle(c.getCenter(), r) ||
+            _lineVsCircle(r.topEdge(), c) ||
+            _lineVsCircle(r.rightEdge(), c) ||
+            _lineVsCircle(r.bottomEdge(), c) ||
+            _lineVsCircle(r.leftEdge(), c);
     }
 
     var _lineVsCircle = function (l, c) {
-        var dx = l.x2 - l.x1;
-        var dy = l.y2 - l.y1;
-        var dr = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+        var co = c.getCenter();
+        var r = c.radius;
+        var d = new RenderJs.Vector(l.pos2.x - l.pos.x, l.pos2.y - l.pos.y);
+        var f = new RenderJs.Vector(l.pos.x - co.x, l.pos.y - co.y);
 
-        var D = l.x1 * l.y2 - l.x2 * l.y1;
+        var a = d.dot(d);
+        var b = 2 * f.dot(d);
+        var c = f.dot(f) - r * r;
 
-        var disc = Math.pow(c.radius, 2) * Math.pow(dr, 2) - Math.pow(D, 2);
+        var discriminant = b * b - 4 * a * c;
 
-        return disc >= 0;
+        if (discriminant < 0) {
+            // no intersection
+            return false;
+        }
+        else {
+            // ray didn't totally miss sphere,
+            // so there is a solution to
+            // the equation.
+
+            discriminant = Math.sqrt(discriminant);
+
+            // either solution may be on or off the ray so need to test both
+            // t1 is always the smaller value, because BOTH discriminant and
+            // a are nonnegative.
+            var t1 = (-b - discriminant) / (2 * a);
+            var t2 = (-b + discriminant) / (2 * a);
+
+            // 3x HIT cases:
+            //          -o->             --|-->  |            |  --|->
+            // Impale(t1 hit,t2 hit), Poke(t1 hit,t2>1), ExitWound(t1<0, t2 hit), 
+
+            // 3x MISS cases:
+            //       ->  o                     o ->              | -> |
+            // FallShort (t1>1,t2>1), Past (t1<0,t2<0), CompletelyInside(t1<0, t2>1)
+
+            if (t1 >= 0 && t1 <= 1) {
+                // t1 is the intersection, and it's closer than t2
+                // (since t1 uses -b - discriminant)
+                // Impale, Poke
+                return true;
+            }
+
+            // here t1 didn't intersect so we are either started
+            // inside the sphere or completely past it
+            if (t2 >= 0 && t2 <= 1) {
+                // ExitWound
+                return true;
+            }
+
+            // no intn: FallShort, Past, CompletelyInside
+            return false;
+        }
     }
 
-    module.pointInRectangle = function (p, r) {
-        var edges = [
-            //Top
-            { p1: new RenderJs.Point(r.x, r.y), p2: new RenderJs.Point(r.x + r.width, r.y) },
-            //Right
-            { p1: new RenderJs.Point(r.x + r.width, r.y), p2: new RenderJs.Point(r.x + r.width, r.y + r.height) },
-            //Bottom
-            { p1: new RenderJs.Point(r.x + r.width, r.y + r.height), p2: new RenderJs.Point(r.x, r.y + r.height) },
-            //Left
-            { p1: new RenderJs.Point(r.x, r.y + r.height), p2: new RenderJs.Point(r.x, r.y) }
-        ];
-        return _pointInPolygon(p, edges);
+    var _pointInRectangle = function (p, r) {
+        return (p.x >= r.x &&
+            p.x <= r.x + r.width &&
+            p.y >= r.y &&
+            p.y <= r.y + r.height);
+    }
+
+    module.pointInObject = function (p, obj) {
+        if (obj instanceof RenderJs.Canvas.Shapes.Rectangle)
+            return _pointInRectangle(p, obj);
+        if (obj instanceof RenderJs.Canvas.Shapes.Arc)
+            return _pointInCircle(p, obj);
+        if (obj instanceof RenderJs.Canvas.Shapes.Polygon)
+            return _pointInPolygon(p, obj);
+        if (obj instanceof RenderJs.Canvas.Shapes.Line)
+            return _pointInLine(p, obj);
+
+        return false;
     }
 
     module.checkCollision = function (obj1, obj2) {
         if (obj1 instanceof RenderJs.Canvas.Shapes.Rectangle && obj2 instanceof RenderJs.Canvas.Shapes.Rectangle)
-            _AABB(obj1, obj2);
+            return _rectVsRect(obj1, obj2);
 
         if (obj1 instanceof RenderJs.Canvas.Shapes.Rectangle && obj2 instanceof RenderJs.Canvas.Shapes.Arc)
-            _RectVsCircle(obj1, obj2);
+            return _rectVsCircle(obj1, obj2);
         if (obj1 instanceof RenderJs.Canvas.Shapes.Arc && obj2 instanceof RenderJs.Canvas.Shapes.Rectangle)
-            _RectVsCircle(obj1, obj2);
+            return _rectVsCircle(obj2, obj1);
+
+        if (obj1 instanceof RenderJs.Canvas.Shapes.Line && obj2 instanceof RenderJs.Canvas.Shapes.Arc)
+            return _lineVsCircle(obj1, obj2);
+        if (obj1 instanceof RenderJs.Canvas.Shapes.Arc && obj2 instanceof RenderJs.Canvas.Shapes.Line)
+            return _lineVsCircle(obj2, obj1);
+
+        if (obj1 instanceof RenderJs.Canvas.Shapes.Polygon && obj2 instanceof RenderJs.Canvas.Shapes.Polygon)
+            return module.polygonCollision(obj1, obj2).intersect;
+
+        return false;
     }
 
     return module;
 
-}(RenderJs.Physics || {}));
+}(RenderJs.Physics.Collisions || {}));

@@ -18,7 +18,7 @@ RenderJs.Canvas.Layer = function (container, width, height, active) {
         var position = position || Utils.getMousePos(event.target, event);
         _eventManager.trigger(RenderJs.Canvas.Events.click, [event, position]);
         for (var i = this.objects.length - 1; i >= 0; i--) {
-            if (this.objects[i].pointIntersect(position)) {
+            if (RenderJs.Physics.Collisions.pointInObject(position, this.objects[i])) {
                 this.objects[i].trigger(RenderJs.Canvas.Events.click, event)
                 return true;
             }
@@ -33,7 +33,7 @@ RenderJs.Canvas.Layer = function (container, width, height, active) {
         var position = position || Utils.getMousePos(event.target, event);
         _eventManager.trigger(RenderJs.Canvas.Events.mousemove, [event, position]);
         for (var i = this.objects.length - 1; i >= 0; i--) {
-            if (this.objects[i].pointIntersect(position)) {
+            if (RenderJs.Physics.Collisions.pointInObject(position, this.objects[i])) {
                 this.objects[i].trigger(RenderJs.Canvas.Events.mousemove, [event, position])
                 return true;
             }
@@ -48,7 +48,7 @@ RenderJs.Canvas.Layer = function (container, width, height, active) {
         var position = position || Utils.getMousePos(event.target, event);
         _eventManager.trigger(RenderJs.Canvas.Events.mouseenter, [event, position]);
         for (var i = this.objects.length - 1; i >= 0; i--) {
-            if (this.objects[i].pointIntersect(position)) {
+            if (RenderJs.Physics.Collisions.pointInObject(position, this.objects[i])) {
                 this.objects[i].trigger(RenderJs.Canvas.Events.mouseenter, [event, position])
                 return true;
             }
@@ -63,7 +63,7 @@ RenderJs.Canvas.Layer = function (container, width, height, active) {
         var position = position || Utils.getMousePos(event.target, event);
         _eventManager.trigger(RenderJs.Canvas.Events.mouseleave, [event, position]);
         for (var i = this.objects.length - 1; i >= 0; i--) {
-            if (this.objects[i].pointIntersect(position)) {
+            if (RenderJs.Physics.Collisions.pointInObject(position, this.objects[i])) {
                 this.objects[i].trigger(RenderJs.Canvas.Events.mouseleave, [event, position])
                 return true;
             }
@@ -150,7 +150,7 @@ RenderJs.Canvas.Layer = function (container, width, height, active) {
     //
     //Redraw objects on tha layer if it's neccessary
     this.drawObjects = function (frame) {
-        if ((_initialized && !_eventManager.hasSubscribers('animate') && !hasSprites()) || this.objects.length == 0) return;
+        if ((_initialized && !_eventManager.hasSubscribers('animate') && !hasSprites.call(this) && !this.active) || this.objects.length == 0) return;
 
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
@@ -174,7 +174,7 @@ RenderJs.Canvas.Layer = function (container, width, height, active) {
 
             if (this.objects[i].collision) {
                 for (var k = 0, kl = collisionObjects.length; k < kl; k++) {
-                    if (this.objects[i].pixelCollision(collisionObjects[k], _imaginaryCtx)) {
+                    if (RenderJs.Physics.Collisions.checkCollision(this.objects[i], collisionObjects[k])) {
                         this.objects[i]._eventManager.trigger(RenderJs.Canvas.Events.collision, collisionObjects[k]);
                         collisionObjects[k]._eventManager.trigger(RenderJs.Canvas.Events.collision, this.objects[i]);
                     }

@@ -27,13 +27,15 @@
     <script type="text/javascript" src="js/modules/filters.js"></script>
     <script type="text/javascript" src="js/modules/transition.js"></script>
     <script type="text/javascript" src="js/modules/object.js"></script>
-    <!--<script type="text/javascript" src="js/modules/shapes/line.js"></script>
-    <script type="text/javascript" src="js/modules/shapes/image.js"></script>-->
+    <script type="text/javascript" src="js/modules/shapes/line.js"></script>
+    <script type="text/javascript" src="js/modules/shapes/image.js"></script>
     <script type="text/javascript" src="js/modules/shapes/arc.js"></script>
-    <!--<script type="text/javascript" src="js/modules/shapes/rectangle.js"></script>-->
-    <!--<script type="text/javascript" src="js/modules/shapes/sprite.js"></script>-->
+    <script type="text/javascript" src="js/modules/shapes/rectangle.js"></script>
+    <script type="text/javascript" src="js/modules/shapes/sprite.js"></script>
+    <script type="text/javascript" src="js/modules/shapes/polygon.js"></script>
     <script type="text/javascript" src="js/modules/animation.js"></script>
     <script type="text/javascript" src="js/modules/game/physics.js"></script>
+    <script type="text/javascript" src="js/modules/game/polygonCollision.js"></script>
 </head>
 <body>
     <div id="viewport">
@@ -167,6 +169,62 @@
             });
         }
 
+        function polyTest(layer) {
+            var line = new RenderJs.Canvas.Shapes.Line({
+                x1: 400,
+                y1: 300,
+                x2: 450,
+                y2: 350,
+                color: "#333",
+            });
+
+            var arc = new RenderJs.Canvas.Shapes.Arc({
+                x: 20,
+                y: 30,
+                radius: 50,
+                color: "#333",
+            });
+
+            var poly = new RenderJs.Canvas.Shapes.Polygon({
+                x: 0,
+                y: 0,
+                points: [new RenderJs.Vector(100, 0),
+                    new RenderJs.Vector(150, 50),
+                    new RenderJs.Vector(100, 150),
+                    new RenderJs.Vector(0, 100)],
+                fillColor: "#333",
+            });
+
+            var poly2 = new RenderJs.Canvas.Shapes.Polygon({
+                x: 300,
+                y: 100,
+                points: [new RenderJs.Vector(100, 0),
+                    new RenderJs.Vector(150, 50),
+                    new RenderJs.Vector(100, 150),
+                    new RenderJs.Vector(0, 100)],
+                fillColor: "#333",
+            });
+            layer.addObject(line);
+            layer.addObject(arc);
+            layer.addObject(poly);
+            layer.addObject(poly2);
+
+            layer.on("mousemove", function (evt, position) {
+                var velocity = new RenderJs.Vector(position.x - poly.pos.x, position.y - poly.pos.y);
+                var playerTranslation = new RenderJs.Vector(velocity.x, velocity.y);
+
+                r = RenderJs.Physics.Collisions.polygonCollision(poly, poly2, velocity);
+
+                if (r.willIntersect) {
+                    playerTranslation = velocity.add(r.minimumTranslationVector);
+                }
+                //if (r)
+                //    console.log("collision");
+
+                poly.pos.set(poly.pos.add(playerTranslation));
+                poly.offset(playerTranslation);
+            });
+        }
         var stage = new RenderJs.Canvas.Stage({
             container: "viewport",
             width: 1200,
@@ -174,7 +232,7 @@
         });
         var animlayer = stage.createLayer(true);
         var staticlayer = stage.createLayer(false);
-        transition(animlayer);
+        polyTest(animlayer);
         //sprite(staticlayer);
     </script>
     <script type="text/javascript" src="js/main.js"></script>
