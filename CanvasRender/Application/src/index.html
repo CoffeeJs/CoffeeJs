@@ -218,15 +218,16 @@
 
             layer.on("mousemove", function (evt, position) {
                 var velocity = new RenderJs.Vector(position.x - arc.pos.x, position.y - arc.pos.y);
-                var playerTranslation = new RenderJs.Vector(velocity.x, velocity.y);
+                //var playerTranslation = new RenderJs.Vector(velocity.x, velocity.y);
 
-                r = RenderJs.Physics.Collisions.checkCollision(arc, arc2, velocity);
+                r = RenderJs.Physics.Collisions.checkCollision(arc, poly2, velocity);
 
                 if (r) {
-                    playerTranslation = velocity.add(r);
+                    console.log(r);
+                    //velocity.set(velocity.add(r));
                 }
 
-                arc.pos.set(arc.pos.add(playerTranslation));
+                arc.pos.set(arc.pos.add(velocity));
                 //poly.offset(playerTranslation);
             });
         }
