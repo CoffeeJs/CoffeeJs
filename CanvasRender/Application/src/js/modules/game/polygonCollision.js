@@ -7,6 +7,7 @@ RenderJs.Physics.Collisions = (function (module) {
             intersect: true,
             willIntersect: true
         }
+
         var edgeCountA = polygonA.edges.length;
         var edgeCountB = polygonB.edges.length;
         var minIntervalDistance = Infinity;
@@ -94,11 +95,11 @@ RenderJs.Physics.Collisions = (function (module) {
     // Calculate the projection of a polygon on an axis and returns it as a [min, max] interval
     var _projectPolygon = function (axis, polygon, min, max) {
         // To project a point on an axis use the dot product
-        var d = axis.dot(polygon.points[0]);
+        var d = axis.dot(polygon.vertices[0]);
         min = d;
         max = d;
-        for (var i = 0; i < polygon.points.length; i++) {
-            d = polygon.points[i].dot(axis);
+        for (var i = 0; i < polygon.vertices.length; i++) {
+            d = polygon.vertices[i].dot(axis);
             if (d < min) {
                 min = d;
             } else {

@@ -191,7 +191,7 @@ RenderJs.Physics.Collisions = (function (module) {
         var radius2 = radius * radius;
         var points = polygon.vertices.slice();
         var len = points.length;
-        var edge = new RenderJs.Vector(0,0);
+        var edge = new RenderJs.Vector(0, 0);
         var point = new RenderJs.Vector(0, 0);
         var response = {
             overlap: Number.MAX_VALUE,
@@ -224,7 +224,7 @@ RenderJs.Physics.Collisions = (function (module) {
                 // We need to make sure we're in the RIGHT_VORNOI_REGION of the previous edge.
                 edge.set(polygon.edges[prev]);
                 // Calculate the center of the circle relative the starting point of the previous edge
-                var point2 = new RenderJs.Vector(0,0).set(circlePos).sub(points[prev]);
+                var point2 = new RenderJs.Vector(0, 0).set(circlePos).sub(points[prev]);
                 region = _vornoiRegion(edge, point2);
                 if (region === 1) {
                     // It's in the region we want.  Check if the circle intersects the point.
@@ -289,7 +289,7 @@ RenderJs.Physics.Collisions = (function (module) {
             // (overlapN may be null if the circle was in the wrong Vornoi region).
             if (overlapN && response && Math.abs(overlap) < Math.abs(response['overlap'])) {
                 response['overlap'] = overlap;
-                response['overlapN'] = new RenderJs.Vector(0,0).set(overlapN);
+                response['overlapN'] = new RenderJs.Vector(0, 0).set(overlapN);
             }
         }
 
@@ -297,7 +297,7 @@ RenderJs.Physics.Collisions = (function (module) {
         if (response) {
             response['a'] = polygon;
             response['b'] = circle;
-            response['overlapV'] = new RenderJs.Vector(0,0).set(response['overlapN']).scale(response['overlap']);
+            response['overlapV'] = new RenderJs.Vector(0, 0).set(response['overlapN']).scale(response['overlap']);
         }
         return true;
 
@@ -425,9 +425,16 @@ RenderJs.Physics.Collisions = (function (module) {
         if (obj1 instanceof RenderJs.Canvas.Shapes.Arc && obj2 instanceof RenderJs.Canvas.Shapes.Line)
             return _lineVsCircle(obj2, obj1);
 
-        if (obj1 instanceof RenderJs.Canvas.Shapes.Polygon && obj2 instanceof RenderJs.Canvas.Shapes.Polygon)
-            return module.polygonCollision(obj1, obj2, velocity);
-
+        if (obj1 instanceof RenderJs.Canvas.Shapes.Polygon && obj2 instanceof RenderJs.Canvas.Shapes.Polygon) {
+            for (var i = 0; i < obj1.subPolys.length; i++) {
+                for (var j = 0; j < obj2.subPolys.length; j++) {
+                    var response = module.polygonCollision(obj1.subPolys[i], obj2.subPolys[j], velocity);
+                    if (response.intersect || response.willIntersect)
+                        return response;
+                }
+            }
+            return null;//RenderJs.Vector.clone(0, 0);
+        }
         if (obj1 instanceof RenderJs.Canvas.Shapes.Arc && obj2 instanceof RenderJs.Canvas.Shapes.Polygon)
             return _circleVsPolygon(obj1, obj2, velocity);
         if (obj1 instanceof RenderJs.Canvas.Shapes.Polygon && obj2 instanceof RenderJs.Canvas.Shapes.Arc)

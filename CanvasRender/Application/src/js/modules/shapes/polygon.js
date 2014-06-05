@@ -10,9 +10,9 @@ RenderJs.Canvas.Shapes.Polygon = function (options) {
     this.color = "#000";
     this.lineWidth = 1;
     this.vertices = [];
+    this.subPolys = [];
     this.edges = [];
     this.rEdges = [];
-
     /*
     *Constructor
     */
@@ -25,12 +25,13 @@ RenderJs.Canvas.Shapes.Polygon = function (options) {
         this.color = options.color;
         this.lineWidth = options.lineWidth || 1;
         this.buildEdges();
-        this.offset(this.pos);
+        //this.offset(this.pos);
     }
+
     /*
      * Decompose a polygon if it's concave
      */
-    this.decomposition = function (result, reflexVertices, steinerPoints, delta, maxlevel, level) {
+    this.decompose = function (result, reflexVertices, steinerPoints, delta, maxlevel, level) {
         maxlevel = maxlevel || 100;
         level = level || 0;
         delta = delta || 25;
@@ -157,13 +158,14 @@ RenderJs.Canvas.Shapes.Polygon = function (options) {
 
                 // solve smallest poly first
                 if (lowerPoly.vertices.length < upperPoly.vertices.length) {
-                    lowerPoly.decomposition(result, reflexVertices, steinerPoints, delta, maxlevel, level);
-                    upperPoly.decomposition(result, reflexVertices, steinerPoints, delta, maxlevel, level);
+                    lowerPoly.decompose(result, reflexVertices, steinerPoints, delta, maxlevel, level);
+                    upperPoly.decompose(result, reflexVertices, steinerPoints, delta, maxlevel, level);
                 } else {
-                    upperPoly.decomposition(result, reflexVertices, steinerPoints, delta, maxlevel, level);
-                    lowerPoly.decomposition(result, reflexVertices, steinerPoints, delta, maxlevel, level);
+                    upperPoly.decompose(result, reflexVertices, steinerPoints, delta, maxlevel, level);
+                    lowerPoly.decompose(result, reflexVertices, steinerPoints, delta, maxlevel, level);
                 }
-
+                for (var k = 0; k < result.length; k++)
+                    result[k].buildEdges();
                 return result;
             }
         }
@@ -192,7 +194,6 @@ RenderJs.Canvas.Shapes.Polygon = function (options) {
             this.vertices.push(poly.vertices[i]);
         }
     };
-
 
     /*
     * Get a vertex at position i. It does not matter if i is out of bounds, this function will just cycle.
@@ -252,9 +253,10 @@ RenderJs.Canvas.Shapes.Polygon = function (options) {
 
         return true;
     }
+
     this.getIntersectionPoint = function (p1, p2, q1, q2, delta) {
         delta = delta || 0;
-        var a1 = p2.y - p1.x;
+        var a1 = p2.y - p1.y;
         var b1 = p1.x - p2.x;
         var c1 = (a1 * p1.x) + (b1 * p1.y);
         var a2 = q2.y - q1.y;
@@ -263,7 +265,7 @@ RenderJs.Canvas.Shapes.Polygon = function (options) {
         var det = (a1 * b2) - (a2 * b1);
 
         if (!Scalar.eq(det, 0, delta))
-            return [((b2 * c1) - (b1 * c2)) / det, ((a1 * c2) - (a2 * c1)) / det]
+            return RenderJs.Vector.clone(((b2 * c1) - (b1 * c2)) / det, ((a1 * c2) - (a2 * c1)) / det);
         else
             return RenderJs.Vector.clone(0, 0);
     }
@@ -352,10 +354,12 @@ RenderJs.Canvas.Shapes.Polygon = function (options) {
 
     this.offset = function (x, y) {
         var v = arguments.length == 2 ? new RenderJs.Vector(arguments[0], arguments[1]) : arguments[0];
+        this.pos.set(this.pos.add(v));
         for (var i = 0; i < this.vertices.length; i++) {
             var p = this.vertices[i];
             this.vertices[i].set(p.add(v));
         }
+        this.subPolys = this.decompose();
     }
 
     this.toString = function () {
@@ -375,16 +379,21 @@ RenderJs.Canvas.Shapes.Polygon = function (options) {
     *-fps is the frame per second
     */
     this.draw = function (ctx) {
-
-        ctx.beginPath();
-        ctx.moveTo(this.vertices[0].x, this.vertices[0].y);
-        for (var i = 1; i < this.vertices.length; i++) {
-            ctx.lineTo(this.vertices[i].x, this.vertices[i].y);
+        var colors = ["indianred", "yellow", 'green'];
+        for (var i = 0; i < this.subPolys.length; i++) {
+            var vertices = this.subPolys[i].vertices;
+            ctx.beginPath();
+            ctx.moveTo(vertices[0].x, vertices[0].y);
+            for (var j = 1; j < vertices.length; j++) {
+                ctx.lineTo(vertices[j].x, vertices[j].y);
+            }
+            ctx.closePath();
+            ctx.lineWidth = this.lineWidth;
+            ctx.strokeStyle = this.color;
+            ctx.fillStyle = colors[i];
+            ctx.fill();
+            ctx.stroke();
         }
-        ctx.closePath();
-        ctx.lineWidth = this.lineWidth;
-        ctx.strokeStyle = this.color;
-        ctx.stroke();
     }
     _init.call(this, options);
 }

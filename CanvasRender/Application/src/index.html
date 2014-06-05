@@ -195,13 +195,17 @@
             var poly = new RenderJs.Canvas.Shapes.Polygon({
                 x: 0,
                 y: 0,
-                points: [new RenderJs.Vector(100, 0),
-                    new RenderJs.Vector(150, 50),
-                    new RenderJs.Vector(100, 150),
-                    new RenderJs.Vector(0, 100)],
+                points: [new RenderJs.Vector(330, 174),
+                    new RenderJs.Vector(376, 148),
+                    new RenderJs.Vector(390, 122),
+                    new RenderJs.Vector(419, 142),
+                    new RenderJs.Vector(392, 165),
+                new RenderJs.Vector(403, 214),
+                new RenderJs.Vector(360, 187)],
                 fillColor: "#333",
             });
-
+            poly.makeCCW();
+            poly.subPolys = poly.decompose();
             var poly2 = new RenderJs.Canvas.Shapes.Polygon({
                 x: 300,
                 y: 100,
@@ -211,24 +215,24 @@
                     new RenderJs.Vector(0, 100)],
                 fillColor: "#333",
             });
-            layer.addObject(arc);
-            layer.addObject(arc2);
+            //layer.addObject(arc);
+            //layer.addObject(arc2);
             layer.addObject(poly);
             layer.addObject(poly2);
 
             layer.on("mousemove", function (evt, position) {
-                var velocity = new RenderJs.Vector(position.x - arc.pos.x, position.y - arc.pos.y);
+                var velocity = new RenderJs.Vector(position.x - poly2.pos.x, position.y - poly2.pos.y);
                 //var playerTranslation = new RenderJs.Vector(velocity.x, velocity.y);
 
-                r = RenderJs.Physics.Collisions.checkCollision(arc, poly2, velocity);
+                r = RenderJs.Physics.Collisions.checkCollision(poly, poly2, velocity);
 
                 if (r) {
                     console.log(r);
                     //velocity.set(velocity.add(r));
                 }
 
-                arc.pos.set(arc.pos.add(velocity));
-                //poly.offset(playerTranslation);
+                //arc.pos.set(arc.pos.add(velocity));
+                poly2.offset(velocity);
             });
         }
         var stage = new RenderJs.Canvas.Stage({
