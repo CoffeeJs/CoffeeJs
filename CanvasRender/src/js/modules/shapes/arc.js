@@ -46,7 +46,7 @@ RenderJs.Canvas.Shapes.Arc = function (options) {
     *-fps is the frame per second
     */
     this.draw = function (ctx) {
-        if (this.angle != 0) {
+        if (this.angle !== 0) {
             ctx.save();
             this.rotateShape(ctx);
         }
@@ -55,22 +55,24 @@ RenderJs.Canvas.Shapes.Arc = function (options) {
         ctx.strokeStyle = this.color;
         ctx.fillStyle = this.fillColor;
         ctx.arc(this.pos.x + this.width / 2, this.pos.y + this.height / 2, this.width / 2, this.sAngle, this.eAngle);
-        if (this.color)
+        if (this.color) {
             ctx.stroke();
-        if (this.fillColor)
+        }
+        if (this.fillColor) {
             ctx.fill();
+        }
 
         ctx.fillStyle = "white";
         ctx.font = "bold 10pt Verdana";
         ctx.fillText("Wheel", this.pos.x + this.radius - 20, this.pos.y + this.radius);
         ctx.closePath();
-        if (this.angle != 0) {
+        if (this.angle !== 0) {
             ctx.restore();
         }
-    }
+    };
 
     _init.call(this, options);
     
-}
+};
 RenderJs.Canvas.Shapes.Arc.prototype = new RenderJs.Canvas.Object();
 RenderJs.Canvas.Shapes.Arc.constructor = RenderJs.Canvas.Shapes.Arc;
