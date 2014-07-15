@@ -6,11 +6,13 @@ RenderJs.Canvas.Shapes = RenderJs.Canvas.Shapes || {};
 *Represents a circle shape, inherits from shape
 */
 RenderJs.Canvas.Shapes.Arc = function (options) {
+    "use strict";
+
     /*
     *Constructor
     */
     var _init = function (options) {
-        var options = options || {};
+        options = options || {};
         options.width = options.height = options.radius * 2, options.radius * 2;
         //
         //For the base class
@@ -35,7 +37,7 @@ RenderJs.Canvas.Shapes.Arc = function (options) {
     *Overrides the original function
     */
     this.pointIntersect = function (p) {
-        c = this.getCenter();
+        var c = this.getCenter();
 
         return Math.pow(p.x - c.x, 2) + Math.pow(p.y - c.y, 2) <= Math.pow((this.width / 2), 2);
     }

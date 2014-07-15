@@ -1,4 +1,5 @@
 ﻿var Utils = (function (module) {
+    "use strict";
 
     module.convertToRad = function (deg) {
         return deg * (Math.PI / 180);
@@ -24,7 +25,10 @@
         var c, ctx;
         if (img.getContext) {
             c = img;
-            try { ctx = c.getContext('2d'); } catch (e) { }
+            try {
+                ctx = c.getContext('2d');
+            } catch (e) {
+            }
         }
         if (!ctx) {
             c = Utils.getCanvas(img.width, img.height);

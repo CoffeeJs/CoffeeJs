@@ -1,18 +1,25 @@
 ﻿var LinkedList = function () {
-
-    var self = this;
+    "use strict";
     var nodes = [];
 
-    this.length = function () { return nodes.length; }
-    this.first = function () { return nodes[0]; };
-    this.last = function () { return nodes[nodes.length - 1]; };
+    this.length = function () {
+        return nodes.length;
+    };
+    this.first = function () {
+        return nodes[0];
+    };
+    this.last = function () {
+        return nodes[nodes.length - 1];
+    };
 
     this.buildList = function (nodes) {
         for (var i = 0, length = nodes.length; i < length; i++) {
-            if (i === 0)
+            if (i === 0) {
                 this.first = nodes[i];
-            if (i === length - 1)
+            }
+            if (i === length - 1) {
                 this.last = nodes[i];
+            }
 
             nodes[i].prev = nodes[i - 1];
             nodes[i].next = nodes[i + 1];
@@ -28,7 +35,7 @@
             node.prev = last;
         }
         nodes.push(node);
-    }
+    };
 
     this.getEnumerator = function () {
         var index = -1;
@@ -41,9 +48,11 @@
                 return nodes[++index];
             },
             prev: function () {
-                if (index === 0) return;
+                if (index === 0) {
+                    return;
+                }
                 return nodes[index--];
             }
         };
-    }
+    };
 }

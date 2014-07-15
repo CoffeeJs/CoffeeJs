@@ -2,7 +2,7 @@
 RenderJs.Canvas = RenderJs.Canvas || {};
 
 RenderJs.Canvas.Stage = function (options) {
-    
+    "use strict";
     /*
      * Locals
      */
@@ -15,13 +15,15 @@ RenderJs.Canvas.Stage = function (options) {
         var self = this;
         _stats.begin();
         var enumerator = this.layers.getEnumerator();
-        while (enumerator.next() != undefined) {
+        while (enumerator.next() !== undefined) {
             enumerator.current().drawObjects(_FPS);
         }
 
-        requestAnimationFrame(function () { _invalidate.call(self); });
+        requestAnimationFrame(function () {
+            _invalidate.call(self);
+        });
         _stats.end();
-    }
+    };
 
     this.layers = new LinkedList();
     this.width = 1200;
@@ -46,18 +48,18 @@ RenderJs.Canvas.Stage = function (options) {
         document.getElementById(_container).style.height = this.height + "px";
 
         _invalidate.call(this);
-    }
-    
+    };
+
     this.onInvalidate = function (handler) {
         _eventManager.subscribe("onInvalidate", handler);
-    }
+    };
 
-    this.createLayer= function (active) {
+    this.createLayer = function (active) {
         var layer = new RenderJs.Canvas.Layer(_container, this.width, this.height, active);
         this.layers.append(layer);
 
         return layer;
-    }
+    };
 
     _init.call(this, options);
 }

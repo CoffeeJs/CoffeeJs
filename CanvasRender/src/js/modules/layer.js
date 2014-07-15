@@ -2,12 +2,18 @@
 RenderJs.Canvas = RenderJs.Canvas || {};
 
 RenderJs.Canvas.Layer = function (container, width, height, active) {
+    "use strict";
+    /*
+     * Dependencies
+     */
+    var EventManager = EventManager || {};
+    var Utils = Utils || {};
+
     /*
      * Locals
      */
     var _self = this;
     var _initialized = false;
-    var _animated = false;
     var _eventManager = new EventManager();
     var _time = 0;
     var _imaginaryCtx = null;
@@ -15,7 +21,7 @@ RenderJs.Canvas.Layer = function (container, width, height, active) {
     //
     //Click internal event handler 
     var _clickHandler = function (event, position) {
-        var position = position || Utils.getMousePos(event.target, event);
+        position = position || Utils.getMousePos(event.target, event);
         _eventManager.trigger(RenderJs.Canvas.Events.click, [event, position]);
         for (var i = this.objects.length - 1; i >= 0; i--) {
             if (RenderJs.Physics.Collisions.pointInObject(position, this.objects[i])) {
@@ -23,14 +29,15 @@ RenderJs.Canvas.Layer = function (container, width, height, active) {
                 return true;
             }
         }
-        if (this.prev)
+        if (this.prev) {
             $(this.prev.canvas).trigger("click", position);
-    }
+        }
+    };
 
     //
     //Mousemove internal event handler 
     var _mousemoveHandler = function (event, position) {
-        var position = position || Utils.getMousePos(event.target, event);
+        position = position || Utils.getMousePos(event.target, event);
         _eventManager.trigger(RenderJs.Canvas.Events.mousemove, [event, position]);
         for (var i = this.objects.length - 1; i >= 0; i--) {
             if (RenderJs.Physics.Collisions.pointInObject(position, this.objects[i])) {
@@ -38,14 +45,15 @@ RenderJs.Canvas.Layer = function (container, width, height, active) {
                 return true;
             }
         }
-        if (this.prev)
+        if (this.prev) {
             $(this.prev.canvas).trigger("mousemove", position);
-    }
+        }
+    };
 
     //
     //Mouseenter internal event handler 
     var _mouseenterHandler = function (event, position) {
-        var position = position || Utils.getMousePos(event.target, event);
+        position = position || Utils.getMousePos(event.target, event);
         _eventManager.trigger(RenderJs.Canvas.Events.mouseenter, [event, position]);
         for (var i = this.objects.length - 1; i >= 0; i--) {
             if (RenderJs.Physics.Collisions.pointInObject(position, this.objects[i])) {
@@ -53,24 +61,26 @@ RenderJs.Canvas.Layer = function (container, width, height, active) {
                 return true;
             }
         }
-        if (this.prev)
+        if (this.prev) {
             $(this.prev.canvas).trigger("mouseenter", position);
-    }
+        }
+    };
 
     //
     //Mouseleave internal event handler 
     var _mouseleaveHandler = function (event, position) {
-        var position = position || Utils.getMousePos(event.target, event);
+        position = position || Utils.getMousePos(event.target, event);
         _eventManager.trigger(RenderJs.Canvas.Events.mouseleave, [event, position]);
         for (var i = this.objects.length - 1; i >= 0; i--) {
             if (RenderJs.Physics.Collisions.pointInObject(position, this.objects[i])) {
-                this.objects[i].trigger(RenderJs.Canvas.Events.mouseleave, [event, position])
+                this.objects[i].trigger(RenderJs.Canvas.Events.mouseleave, [event, position]);
                 return true;
             }
         }
-        if (this.prev)
+        if (this.prev) {
             $(this.prev.canvas).trigger("mouseleave", position);
-    }
+        }
+    };
 
     //
     //Constructor
@@ -97,7 +107,7 @@ RenderJs.Canvas.Layer = function (container, width, height, active) {
         $(this.canvas).on("mouseleave", function (event, position) {
             _mouseleaveHandler.call(_self, event, position);
         });
-    }
+    };
 
     //
     //For the linked list
@@ -113,18 +123,20 @@ RenderJs.Canvas.Layer = function (container, width, height, active) {
     //
     //Subscribe to an event like animate, click, mousemove, mouseenter, mouseleave
     this.on = function (type, handler) {
-        if (!RenderJs.Canvas.Events[type])
+        if (!RenderJs.Canvas.Events[type]) {
             return;
+        }
         return _eventManager.subscribe(type, handler);
-    }
+    };
 
     //
     //Unsubscribe from an event like animate, click, mousemove, mouseenter, mouseleave
     this.off = function (type, id) {
-        if (!RenderJs.Canvas.Events[type])
+        if (!RenderJs.Canvas.Events[type]) {
             return;
+        }
         _eventManager.unsubscribe(type, id);
-    }
+    };
 
     //
     //Add an object to the layer, it will be rendered on this layer
@@ -135,17 +147,18 @@ RenderJs.Canvas.Layer = function (container, width, height, active) {
         }
         object.layer = this;
         this.objects.push(object);
-    }
+    };
 
     //
     //Returns true if the layer has sprite objects otherwise false
     var hasSprites = function () {
         for (var i = 0, length = this.objects.length; i < length; i++) {
-            if (this.objects[i] instanceof RenderJs.Canvas.Shapes.Sprite)
+            if (this.objects[i] instanceof RenderJs.Canvas.Shapes.Sprite) {
                 return true;
+            }
         }
         return false;
-    }
+    };
 
     //
     //Redraw objects on tha layer if it's neccessary
@@ -157,19 +170,21 @@ RenderJs.Canvas.Layer = function (container, width, height, active) {
         _eventManager.trigger("animate", frame);
         var objectsLoaded = true;
         for (var i = 0, length = this.objects.length; i < length; i++) {
-            if (!this.objects[i].loaded)
+            if (!this.objects[i].loaded) {
                 objectsLoaded = false;
+            }
             this.objects[i].draw(this.ctx, {
                 frameRate: frame,
-                lastTime: this._time,
-                time: this._time + 1000 / frame
+                lastTime: _time,
+                time: _time + 1000 / frame
             });
             //
             //Collision detection
             var collisionObjects = [];
             for (var j = 0, jl = this.objects.length; j < jl; j++) {
-                if (this.objects[j].collision && i != j)
+                if (this.objects[j].collision && i !== j) {
                     collisionObjects.push(this.objects[j]);
+                }
             }
 
             if (this.objects[i].collision) {
@@ -184,8 +199,8 @@ RenderJs.Canvas.Layer = function (container, width, height, active) {
         if (objectsLoaded)
             _initialized = true;
         _time += 1000 / frame;
-    }
+    };
 
     _init.call(this, container, width, height, active);
-}
+};
 
